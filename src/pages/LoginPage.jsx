@@ -81,8 +81,12 @@ export default function LoginPage() {
               </div>
             </div>
 
+            <h1 className="mt-8 max-w-sm text-3xl font-black leading-tight tracking-normal text-slate-950 drop-shadow-[0_1px_0_rgba(255,255,255,0.85)] sm:text-4xl lg:hidden">
+              Galeri indah untuk setiap momen.
+            </h1>
+
             <div className="mt-auto max-w-xl pb-2 pt-28 sm:pt-36 lg:mt-20 lg:pb-0 lg:pt-0 xl:mt-24">
-              <h1 className="max-w-sm text-3xl font-black leading-tight tracking-normal text-slate-950 drop-shadow-[0_1px_0_rgba(255,255,255,0.85)] sm:text-4xl lg:max-w-xl lg:text-5xl xl:text-6xl">
+              <h1 className="hidden max-w-sm text-3xl font-black leading-tight tracking-normal text-slate-950 drop-shadow-[0_1px_0_rgba(255,255,255,0.85)] sm:text-4xl lg:block lg:max-w-xl lg:text-5xl xl:text-6xl">
                 Galeri indah untuk setiap momen.
               </h1>
               <p className="mt-3 max-w-sm text-sm font-semibold leading-6 text-slate-700 sm:text-base lg:mt-6 lg:max-w-lg lg:text-lg lg:font-normal lg:leading-8">
