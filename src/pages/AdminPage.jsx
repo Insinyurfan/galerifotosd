@@ -26,6 +26,16 @@ function getTypeLabel(type) {
   return type === "image" ? "Foto" : "Video";
 }
 
+function normalizeDuplicateTitle(title = "") {
+  return title
+    .toLowerCase()
+    .replace(/\.[a-z0-9]+$/i, "")
+    .replace(/\s*\(\d+\)\s*$/g, "")
+    .replace(/\s+-\s+copy$/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export default function AdminPage() {
   const dragTouchedIds = useRef(new Set());
   const dragSelectionMode = useRef(true);
@@ -33,6 +43,7 @@ export default function AdminPage() {
   const [items, setItems] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [adminSearchQuery, setAdminSearchQuery] = useState("");
+  const [duplicatePanelOpen, setDuplicatePanelOpen] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: "created_at", direction: "desc" });
   const [isDraggingSelection, setIsDraggingSelection] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -106,11 +117,16 @@ export default function AdminPage() {
 
     for (const item of items) {
       const fileId = getDriveFileId(item.drive_url);
-      if (!fileId) continue;
+      const titleKey = normalizeDuplicateTitle(item.title);
+      const duplicateKey = fileId
+        ? `drive:${fileId}`
+        : `meta:${item.type}:${item.folder_category}:${titleKey}`;
 
-      const currentGroup = groups.get(fileId) || [];
+      if (!titleKey && !fileId) continue;
+
+      const currentGroup = groups.get(duplicateKey) || [];
       currentGroup.push(item);
-      groups.set(fileId, currentGroup);
+      groups.set(duplicateKey, currentGroup);
     }
 
     const duplicateGroups = Array.from(groups.values()).filter((group) => group.length > 1);
@@ -186,6 +202,7 @@ export default function AdminPage() {
   function selectRemovableDuplicates() {
     setSelectedIds((current) => Array.from(new Set([...current, ...duplicateInfo.removableDuplicateIds])));
     setAdminSearchQuery("");
+    setDuplicatePanelOpen(false);
   }
 
   function handleChange(event) {
@@ -581,6 +598,18 @@ export default function AdminPage() {
               </label>
               <button
                 type="button"
+                onClick={() => setDuplicatePanelOpen((open) => !open)}
+                className={`inline-flex h-10 items-center justify-center gap-2 rounded-md px-4 text-sm font-bold transition ${
+                  duplicateInfo.duplicateExtraCount
+                    ? "bg-amber-100 text-amber-800 hover:bg-amber-200"
+                    : "border border-blue-100 bg-white text-slate-700 hover:bg-blue-50 hover:text-sapphire-700"
+                }`}
+              >
+                <AlertTriangle size={17} />
+                {duplicateInfo.duplicateExtraCount ? `Cek Duplikat (${duplicateInfo.duplicateExtraCount})` : "Cek Duplikat"}
+              </button>
+              <button
+                type="button"
                 onClick={toggleSelectAll}
                 disabled={!visibleItems.length || loading}
                 className="inline-flex h-10 items-center justify-center rounded-md border border-blue-100 bg-white px-4 text-sm font-bold text-slate-700 transition hover:bg-blue-50 hover:text-sapphire-700 disabled:cursor-not-allowed disabled:opacity-50"
@@ -599,28 +628,59 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {duplicateInfo.duplicateGroups.length ? (
-            <div className="border-b border-amber-200 bg-amber-50 px-5 py-4">
+          {duplicatePanelOpen ? (
+            <div
+              className={`border-b px-5 py-4 ${
+                duplicateInfo.duplicateGroups.length ? "border-amber-200 bg-amber-50" : "border-emerald-200 bg-emerald-50"
+              }`}
+            >
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div className="flex gap-3">
-                  <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-md bg-amber-100 text-amber-700">
+                  <span
+                    className={`mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-md ${
+                      duplicateInfo.duplicateGroups.length ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"
+                    }`}
+                  >
                     <AlertTriangle size={19} />
                   </span>
                   <div>
-                    <h3 className="text-sm font-black text-amber-900">Media duplikat terdeteksi</h3>
-                    <p className="mt-1 text-sm leading-6 text-amber-800">
-                      Ada {duplicateInfo.duplicateExtraCount} media tambahan dari file Google Drive yang sama. Sistem akan memilih
-                      duplikat tambahan dan menyisakan satu data pertama untuk tiap file.
-                    </p>
+                    <h3
+                      className={`text-sm font-black ${
+                        duplicateInfo.duplicateGroups.length ? "text-amber-900" : "text-emerald-900"
+                      }`}
+                    >
+                      {duplicateInfo.duplicateGroups.length ? "Media duplikat terdeteksi" : "Tidak ada duplikat terdeteksi"}
+                    </h3>
+                    {duplicateInfo.duplicateGroups.length ? (
+                      <p className="mt-1 text-sm leading-6 text-amber-800">
+                        Ada {duplicateInfo.duplicateExtraCount} media tambahan yang kemungkinan double dari Google Drive. Deteksi ini
+                        memakai ID file Drive dan kemiripan judul, tipe, serta kategori.
+                      </p>
+                    ) : (
+                      <p className="mt-1 text-sm leading-6 text-emerald-800">
+                        Belum ada foto atau video yang terlihat double dari ID Drive maupun judul yang sama.
+                      </p>
+                    )}
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={selectRemovableDuplicates}
-                  className="inline-flex h-10 shrink-0 items-center justify-center rounded-md bg-amber-600 px-4 text-sm font-bold text-white transition hover:bg-amber-700"
-                >
-                  Pilih Duplikat
-                </button>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  {duplicateInfo.duplicateGroups.length ? (
+                    <button
+                      type="button"
+                      onClick={selectRemovableDuplicates}
+                      className="inline-flex h-10 shrink-0 items-center justify-center rounded-md bg-amber-600 px-4 text-sm font-bold text-white transition hover:bg-amber-700"
+                    >
+                      Pilih Duplikat untuk Dihapus
+                    </button>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={() => setDuplicatePanelOpen(false)}
+                    className="inline-flex h-10 shrink-0 items-center justify-center rounded-md border border-white/70 bg-white px-4 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+                  >
+                    Biarkan
+                  </button>
+                </div>
               </div>
             </div>
           ) : null}
