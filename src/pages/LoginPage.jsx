@@ -59,30 +59,33 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen bg-white">
       <div className="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
-        <section className="relative hidden overflow-hidden bg-blue-50 lg:block">
+        <section className="relative min-h-[44vh] overflow-hidden bg-blue-50 lg:min-h-screen">
           <img
             src="/login-gallery-hero.png"
             alt=""
             className="absolute inset-0 h-full w-full object-cover"
             aria-hidden="true"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-white/70 via-blue-50/40 to-sapphire-700/10" />
-          <div className="relative z-10 flex min-h-screen flex-col p-12 xl:p-16">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/80 via-blue-50/45 to-sapphire-700/10" />
+          <div className="relative z-10 flex h-full min-h-[44vh] flex-col p-6 sm:p-8 lg:min-h-screen lg:p-12 xl:p-16">
             <div className="flex items-center gap-4">
-              <span className="grid h-14 w-14 place-items-center rounded-xl bg-white text-sapphire-700 shadow-soft">
-                <Aperture size={28} />
+              <span className="grid h-12 w-12 place-items-center rounded-xl bg-white text-sapphire-700 shadow-soft lg:h-14 lg:w-14">
+                <Aperture size={24} className="lg:hidden" />
+                <Aperture size={28} className="hidden lg:block" />
               </span>
               <div>
-                <p className="text-xl font-black uppercase tracking-[0.12em] text-slate-950">Galeri SDN Wanasari 15</p>
+                <p className="text-sm font-black uppercase tracking-[0.12em] text-slate-950 sm:text-base lg:text-xl">
+                  Galeri SDN Wanasari 15
+                </p>
                 <p className="mt-1 text-sm font-semibold text-slate-600">Kelola momen, bagikan cerita.</p>
               </div>
             </div>
 
-            <div className="mt-20 max-w-xl xl:mt-24">
-              <h1 className="text-5xl font-black leading-tight tracking-normal text-slate-950 xl:text-6xl">
+            <div className="mt-8 max-w-xl sm:mt-10 lg:mt-20 xl:mt-24">
+              <h1 className="max-w-sm text-3xl font-black leading-tight tracking-normal text-slate-950 sm:text-4xl lg:max-w-xl lg:text-5xl xl:text-6xl">
                 Galeri indah untuk setiap momen.
               </h1>
-              <p className="mt-6 max-w-lg text-lg leading-8 text-slate-700">
+              <p className="mt-4 max-w-sm text-sm leading-6 text-slate-700 sm:text-base lg:mt-6 lg:max-w-lg lg:text-lg lg:leading-8">
                 Kelola foto, video, dan kenangan SDN Wanasari 15 dengan tampilan yang rapi dan mudah diakses.
               </p>
             </div>
@@ -94,16 +97,6 @@ export default function LoginPage() {
           <div className="absolute -bottom-24 left-10 h-80 w-80 rounded-full bg-sapphire-100/70 blur-3xl" />
 
           <div className="relative w-full max-w-xl">
-            <div className="mb-6 flex items-center gap-3 lg:hidden">
-              <span className="grid h-12 w-12 place-items-center rounded-xl bg-sapphire-700 text-white shadow-soft">
-                <Aperture size={24} />
-              </span>
-              <div>
-                <p className="text-base font-black uppercase tracking-[0.1em] text-slate-950">Galeri SDN Wanasari 15</p>
-                <p className="text-sm text-slate-600">Kelola momen, bagikan cerita.</p>
-              </div>
-            </div>
-
             <section className="rounded-[28px] border border-white/80 bg-gradient-to-br from-white/95 via-blue-50/95 to-white/90 p-6 shadow-[0_28px_90px_rgba(30,64,175,0.16)] backdrop-blur sm:p-9">
               <Link to="/" className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-sapphire-700 hover:text-sapphire-800">
                 <ArrowLeft size={17} />
