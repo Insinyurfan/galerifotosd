@@ -1,8 +1,27 @@
+import { useEffect, useState } from "react";
 import { Download, X } from "lucide-react";
-import { getDownloadUrl, getImageUrl } from "../lib/drive.js";
+import { getDownloadUrl, getImageCandidates } from "../lib/drive.js";
 
 export default function Lightbox({ media, onClose }) {
+  const imageCandidates = getImageCandidates(media?.drive_url || "");
+  const [imageIndex, setImageIndex] = useState(0);
+  const [imageFailed, setImageFailed] = useState(false);
+
+  useEffect(() => {
+    setImageIndex(0);
+    setImageFailed(false);
+  }, [media?.drive_url]);
+
   if (!media) return null;
+
+  function handleImageError() {
+    if (imageIndex < imageCandidates.length - 1) {
+      setImageIndex((current) => current + 1);
+      return;
+    }
+
+    setImageFailed(true);
+  }
 
   return (
     <div
@@ -21,11 +40,21 @@ export default function Lightbox({ media, onClose }) {
         >
           <X size={20} />
         </button>
-        <img
-          src={getImageUrl(media.drive_url)}
-          alt={media.title}
-          className="mx-auto max-h-[86vh] w-auto rounded-lg bg-white object-contain shadow-soft"
-        />
+        {imageFailed ? (
+          <div className="grid min-h-[45vh] place-items-center rounded-lg bg-white px-5 text-center shadow-soft">
+            <div>
+              <p className="text-base font-bold text-slate-900">Preview gambar belum tersedia</p>
+              <p className="mt-2 text-sm leading-6 text-slate-600">File tetap bisa dibuka lewat tombol Download.</p>
+            </div>
+          </div>
+        ) : (
+          <img
+            src={imageCandidates[imageIndex]}
+            alt={media.title}
+            className="mx-auto max-h-[86vh] w-auto rounded-lg bg-white object-contain shadow-soft"
+            onError={handleImageError}
+          />
+        )}
         <div className="mt-3 rounded-lg bg-white p-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">

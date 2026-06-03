@@ -19,6 +19,18 @@ export function getImageUrl(url = "") {
   return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
 }
 
+export function getImageCandidates(url = "") {
+  const fileId = getDriveFileId(url);
+  if (!fileId) return [url].filter(Boolean);
+
+  return [
+    `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`,
+    `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`,
+    `https://drive.google.com/uc?export=view&id=${fileId}`,
+    url,
+  ].filter((candidate, index, candidates) => candidate && candidates.indexOf(candidate) === index);
+}
+
 export function getVideoEmbedUrl(url = "") {
   const fileId = getDriveFileId(url);
   if (!fileId) return "";

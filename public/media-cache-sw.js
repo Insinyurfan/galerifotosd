@@ -1,4 +1,4 @@
-const CACHE_NAME = "galeri-sdn-media-v1";
+const CACHE_NAME = "galeri-sdn-media-v2";
 const MAX_IMAGE_CACHE_ITEMS = 80;
 
 async function trimImageCache(cache) {
@@ -14,7 +14,14 @@ self.addEventListener("install", () => {
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches
+      .keys()
+      .then((cacheNames) =>
+        Promise.all(cacheNames.filter((cacheName) => cacheName !== CACHE_NAME).map((cacheName) => caches.delete(cacheName)))
+      )
+      .then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener("fetch", (event) => {
@@ -33,8 +40,10 @@ self.addEventListener("fetch", (event) => {
       if (cachedResponse) return cachedResponse;
 
       const networkResponse = await fetch(event.request);
-      await cache.put(event.request, networkResponse.clone());
-      await trimImageCache(cache);
+      if (networkResponse.ok) {
+        await cache.put(event.request, networkResponse.clone());
+        await trimImageCache(cache);
+      }
       return networkResponse;
     })
   );

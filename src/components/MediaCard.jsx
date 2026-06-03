@@ -1,18 +1,51 @@
+import { useEffect, useState } from "react";
 import { Download, Image, PlayCircle } from "lucide-react";
-import { getDownloadUrl, getImageUrl, getVideoEmbedUrl } from "../lib/drive.js";
+import { getDownloadUrl, getImageCandidates, getVideoEmbedUrl } from "../lib/drive.js";
 
 export default function MediaCard({ media, onOpen }) {
   const isImage = media.type === "image";
-  const imageUrl = getImageUrl(media.drive_url);
+  const imageCandidates = getImageCandidates(media.drive_url);
+  const [imageIndex, setImageIndex] = useState(0);
+  const [imageFailed, setImageFailed] = useState(false);
   const videoEmbedUrl = getVideoEmbedUrl(media.drive_url);
   const downloadUrl = getDownloadUrl(media.drive_url);
+
+  useEffect(() => {
+    setImageIndex(0);
+    setImageFailed(false);
+  }, [media.drive_url]);
+
+  function handleImageError() {
+    if (imageIndex < imageCandidates.length - 1) {
+      setImageIndex((current) => current + 1);
+      return;
+    }
+
+    setImageFailed(true);
+  }
 
   return (
     <article className="overflow-hidden rounded-lg border border-blue-100 bg-white shadow-soft">
       <div className="relative aspect-[4/3] bg-slate-100">
         {isImage ? (
           <button type="button" className="h-full w-full" onClick={() => onOpen(media)}>
-            <img src={imageUrl} alt={media.title} className="h-full w-full object-cover" loading="lazy" />
+            {imageFailed ? (
+              <div className="grid h-full w-full place-items-center bg-slate-100 px-5 text-center">
+                <div>
+                  <Image className="mx-auto text-slate-400" size={34} />
+                  <p className="mt-3 text-sm font-semibold text-slate-600">Preview belum tersedia</p>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">File tetap bisa dibuka lewat tombol Download.</p>
+                </div>
+              </div>
+            ) : (
+              <img
+                src={imageCandidates[imageIndex]}
+                alt={media.title}
+                className="h-full w-full object-cover"
+                loading="lazy"
+                onError={handleImageError}
+              />
+            )}
           </button>
         ) : videoEmbedUrl ? (
           <iframe
