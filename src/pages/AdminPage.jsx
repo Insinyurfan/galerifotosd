@@ -115,29 +115,35 @@ export default function AdminPage() {
   const duplicateInfo = useMemo(() => {
     const groups = new Map();
 
+    function addToGroup(key, item) {
+      if (!key) return;
+      const currentGroup = groups.get(key) || [];
+      currentGroup.push(item);
+      groups.set(key, currentGroup);
+    }
+
     for (const item of items) {
       const fileId = getDriveFileId(item.drive_url);
       const titleKey = normalizeDuplicateTitle(item.title);
-      const duplicateKey = fileId
-        ? `drive:${fileId}`
-        : `meta:${item.type}:${item.folder_category}:${titleKey}`;
 
-      if (!titleKey && !fileId) continue;
-
-      const currentGroup = groups.get(duplicateKey) || [];
-      currentGroup.push(item);
-      groups.set(duplicateKey, currentGroup);
+      addToGroup(fileId ? `drive:${fileId}` : "", item);
+      addToGroup(titleKey ? `title:${item.type}:${titleKey}` : "", item);
     }
 
     const duplicateGroups = Array.from(groups.values()).filter((group) => group.length > 1);
-    const duplicateIds = new Set(duplicateGroups.flatMap((group) => group.map((item) => item.id)));
-    const removableDuplicateIds = duplicateGroups.flatMap((group) => group.slice(1).map((item) => item.id));
+    const duplicateIds = new Set();
+    const removableDuplicateIds = new Set();
+
+    for (const group of duplicateGroups) {
+      group.forEach((item) => duplicateIds.add(item.id));
+      group.slice(1).forEach((item) => removableDuplicateIds.add(item.id));
+    }
 
     return {
       duplicateGroups,
       duplicateIds,
-      removableDuplicateIds,
-      duplicateExtraCount: removableDuplicateIds.length,
+      removableDuplicateIds: Array.from(removableDuplicateIds),
+      duplicateExtraCount: removableDuplicateIds.size,
     };
   }, [items]);
 
