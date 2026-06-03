@@ -67,7 +67,7 @@ export default function LoginPage() {
             aria-hidden="true"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-white/70 via-blue-50/40 to-sapphire-700/10" />
-          <div className="relative z-10 flex min-h-screen flex-col justify-between p-12 xl:p-16">
+          <div className="relative z-10 flex min-h-screen flex-col p-12 xl:p-16">
             <div className="flex items-center gap-4">
               <span className="grid h-14 w-14 place-items-center rounded-xl bg-white text-sapphire-700 shadow-soft">
                 <Aperture size={28} />
@@ -78,7 +78,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="max-w-xl pb-10">
+            <div className="mt-20 max-w-xl xl:mt-24">
               <h1 className="text-5xl font-black leading-tight tracking-normal text-slate-950 xl:text-6xl">
                 Galeri indah untuk setiap momen.
               </h1>
