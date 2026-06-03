@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Download, X } from "lucide-react";
-import { getDownloadUrl, getImageCandidates } from "../lib/drive.js";
+import { Download, ExternalLink, X } from "lucide-react";
+import { getDownloadUrl, getDriveViewUrl, getImageCandidates } from "../lib/drive.js";
 
 export default function Lightbox({ media, onClose }) {
   const imageCandidates = getImageCandidates(media?.drive_url || "");
@@ -44,7 +44,7 @@ export default function Lightbox({ media, onClose }) {
           <div className="grid min-h-[45vh] place-items-center rounded-lg bg-white px-5 text-center shadow-soft">
             <div>
               <p className="text-base font-bold text-slate-900">Preview gambar belum tersedia</p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">File tetap bisa dibuka lewat tombol Download.</p>
+              <p className="mt-2 text-sm leading-6 text-slate-600">File tetap bisa dibuka langsung lewat Google Drive.</p>
             </div>
           </div>
         ) : (
@@ -61,15 +61,26 @@ export default function Lightbox({ media, onClose }) {
               <h2 className="text-lg font-bold text-slate-950">{media.title}</h2>
               {media.description ? <p className="mt-1 text-sm text-slate-600">{media.description}</p> : null}
             </div>
-            <a
-              href={getDownloadUrl(media.drive_url)}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-md bg-sapphire-700 px-4 text-sm font-bold text-white transition hover:bg-sapphire-800"
-            >
-              <Download size={17} />
-              Download
-            </a>
+            <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+              <a
+                href={getDriveViewUrl(media.drive_url)}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-blue-100 bg-white px-4 text-sm font-bold text-sapphire-700 transition hover:bg-blue-50"
+              >
+                <ExternalLink size={17} />
+                Buka Drive
+              </a>
+              <a
+                href={getDownloadUrl(media.drive_url)}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-sapphire-700 px-4 text-sm font-bold text-white transition hover:bg-sapphire-800"
+              >
+                <Download size={17} />
+                Download
+              </a>
+            </div>
           </div>
         </div>
       </div>

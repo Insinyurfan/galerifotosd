@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Download, Image, PlayCircle } from "lucide-react";
-import { getDownloadUrl, getImageCandidates, getVideoEmbedUrl } from "../lib/drive.js";
+import { Download, ExternalLink, Image, PlayCircle } from "lucide-react";
+import { getDownloadUrl, getDriveViewUrl, getImageCandidates, getVideoEmbedUrl } from "../lib/drive.js";
 
 export default function MediaCard({ media, onOpen }) {
   const isImage = media.type === "image";
@@ -9,6 +9,7 @@ export default function MediaCard({ media, onOpen }) {
   const [imageFailed, setImageFailed] = useState(false);
   const videoEmbedUrl = getVideoEmbedUrl(media.drive_url);
   const downloadUrl = getDownloadUrl(media.drive_url);
+  const driveViewUrl = getDriveViewUrl(media.drive_url);
 
   useEffect(() => {
     setImageIndex(0);
@@ -34,7 +35,7 @@ export default function MediaCard({ media, onOpen }) {
                 <div>
                   <Image className="mx-auto text-slate-400" size={34} />
                   <p className="mt-3 text-sm font-semibold text-slate-600">Preview belum tersedia</p>
-                  <p className="mt-1 text-xs leading-5 text-slate-500">File tetap bisa dibuka lewat tombol Download.</p>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">File tetap bisa dibuka lewat tombol Drive.</p>
                 </div>
               </div>
             ) : (
@@ -78,15 +79,26 @@ export default function MediaCard({ media, onOpen }) {
         ) : (
           <p className="text-sm leading-6 text-slate-400">Tidak ada deskripsi.</p>
         )}
-        <a
-          href={downloadUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-md bg-sapphire-700 px-4 text-sm font-bold text-white transition hover:bg-sapphire-800"
-        >
-          <Download size={17} />
-          Download
-        </a>
+        <div className="grid gap-2 sm:grid-cols-2">
+          <a
+            href={driveViewUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-blue-100 bg-white px-4 text-sm font-bold text-sapphire-700 transition hover:bg-blue-50"
+          >
+            <ExternalLink size={17} />
+            Buka Drive
+          </a>
+          <a
+            href={downloadUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-sapphire-700 px-4 text-sm font-bold text-white transition hover:bg-sapphire-800"
+          >
+            <Download size={17} />
+            Download
+          </a>
+        </div>
       </div>
     </article>
   );

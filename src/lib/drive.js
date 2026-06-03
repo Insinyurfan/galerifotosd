@@ -43,6 +43,12 @@ export function getDownloadUrl(url = "") {
   return `https://drive.google.com/uc?export=download&id=${fileId}`;
 }
 
+export function getDriveViewUrl(url = "") {
+  const fileId = getDriveFileId(url);
+  if (!fileId) return url;
+  return `https://drive.google.com/file/d/${fileId}/view`;
+}
+
 export function getDirectDriveUrlFromId(fileId = "") {
   if (!fileId.trim()) return "";
   return `https://drive.google.com/uc?export=view&id=${fileId.trim()}`;
