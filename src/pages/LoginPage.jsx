@@ -66,10 +66,9 @@ export default function LoginPage() {
             className="absolute inset-0 h-full w-full object-cover"
             aria-hidden="true"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/95 via-blue-50/75 to-white/25 lg:bg-gradient-to-br lg:from-white/80 lg:via-blue-50/45 lg:to-sapphire-700/10" />
-          <div className="absolute inset-x-0 top-0 h-2/3 bg-white/35 backdrop-blur-[1px] lg:hidden" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-blue-50/20 to-white/80 lg:bg-gradient-to-br lg:from-white/80 lg:via-blue-50/45 lg:to-sapphire-700/10" />
           <div className="relative z-10 flex h-full min-h-[44vh] flex-col p-6 sm:p-8 lg:min-h-screen lg:p-12 xl:p-16">
-            <div className="flex items-center gap-4 rounded-2xl bg-white/80 p-3 shadow-sm ring-1 ring-white/80 backdrop-blur-md lg:bg-transparent lg:p-0 lg:shadow-none lg:ring-0 lg:backdrop-blur-0">
+            <div className="flex items-center gap-4">
               <span className="grid h-12 w-12 place-items-center rounded-xl bg-white text-sapphire-700 shadow-soft lg:h-14 lg:w-14">
                 <Aperture size={24} className="lg:hidden" />
                 <Aperture size={28} className="hidden lg:block" />
@@ -82,15 +81,13 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="mt-8 max-w-xl sm:mt-10 lg:mt-20 xl:mt-24">
-              <div className="max-w-sm rounded-3xl bg-white/82 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.12)] ring-1 ring-white/80 backdrop-blur-md lg:max-w-none lg:bg-transparent lg:p-0 lg:shadow-none lg:ring-0 lg:backdrop-blur-0">
-                <h1 className="text-3xl font-black leading-tight tracking-normal text-slate-950 sm:text-4xl lg:max-w-xl lg:text-5xl xl:text-6xl">
-                  Galeri indah untuk setiap momen.
-                </h1>
-                <p className="mt-4 text-sm font-semibold leading-6 text-slate-700 sm:text-base lg:mt-6 lg:max-w-lg lg:text-lg lg:font-normal lg:leading-8">
-                  Kelola foto, video, dan kenangan SDN Wanasari 15 dengan tampilan yang rapi dan mudah diakses.
-                </p>
-              </div>
+            <div className="mt-auto max-w-xl pb-2 pt-28 sm:pt-36 lg:mt-20 lg:pb-0 lg:pt-0 xl:mt-24">
+              <h1 className="max-w-sm text-3xl font-black leading-tight tracking-normal text-slate-950 drop-shadow-[0_1px_0_rgba(255,255,255,0.85)] sm:text-4xl lg:max-w-xl lg:text-5xl xl:text-6xl">
+                Galeri indah untuk setiap momen.
+              </h1>
+              <p className="mt-3 max-w-sm text-sm font-semibold leading-6 text-slate-700 sm:text-base lg:mt-6 lg:max-w-lg lg:text-lg lg:font-normal lg:leading-8">
+                Kelola foto, video, dan kenangan SDN Wanasari 15 dengan tampilan yang rapi dan mudah diakses.
+              </p>
             </div>
           </div>
         </section>
