@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Lock, LogIn, User } from "lucide-react";
+import { Aperture, ArrowLeft, Eye, EyeOff, Lock, LogIn, ShieldCheck, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase.js";
 
@@ -7,6 +7,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -56,65 +57,132 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="grid min-h-screen place-items-center bg-slate-50 px-4 py-10">
-      <section className="w-full max-w-md rounded-lg border border-blue-100 bg-white p-6 shadow-soft">
-        <Link to="/" className="mb-6 inline-flex items-center text-sm font-semibold text-sapphire-700">
-          Kembali ke galeri
-        </Link>
-        <div className="mb-6">
-          <h1 className="text-2xl font-black text-slate-950">Login Admin</h1>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            Masuk dengan username dan password untuk mengelola konten galeri.
-          </p>
-        </div>
-
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-bold text-slate-800">Username</span>
-            <span className="relative block">
-              <User className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-              <input
-                type="text"
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
-                autoComplete="username"
-                className="h-11 w-full rounded-md border border-slate-200 bg-white pl-10 pr-3 text-sm outline-none transition focus:border-sapphire-500 focus:ring-4 focus:ring-blue-100"
-                required
-              />
-            </span>
-          </label>
-
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-bold text-slate-800">Password</span>
-            <span className="relative block">
-              <Lock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-              <input
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                autoComplete="current-password"
-                className="h-11 w-full rounded-md border border-slate-200 bg-white pl-10 pr-3 text-sm outline-none transition focus:border-sapphire-500 focus:ring-4 focus:ring-blue-100"
-                required
-              />
-            </span>
-          </label>
-
-          {errorMessage ? (
-            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
-              {errorMessage}
+    <main className="min-h-screen bg-white">
+      <div className="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
+        <section className="relative hidden overflow-hidden bg-blue-50 lg:block">
+          <img
+            src="/login-gallery-hero.png"
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-white/70 via-blue-50/40 to-sapphire-700/10" />
+          <div className="relative z-10 flex min-h-screen flex-col justify-between p-12 xl:p-16">
+            <div className="flex items-center gap-4">
+              <span className="grid h-14 w-14 place-items-center rounded-xl bg-white text-sapphire-700 shadow-soft">
+                <Aperture size={28} />
+              </span>
+              <div>
+                <p className="text-xl font-black uppercase tracking-[0.12em] text-slate-950">Galeri SDN Wanasari 15</p>
+                <p className="mt-1 text-sm font-semibold text-slate-600">Kelola momen, bagikan cerita.</p>
+              </div>
             </div>
-          ) : null}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-sapphire-700 px-4 text-sm font-bold text-white transition hover:bg-sapphire-800 disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            <LogIn size={18} />
-            {loading ? "Masuk..." : "Masuk"}
-          </button>
-        </form>
-      </section>
+            <div className="max-w-xl pb-10">
+              <h1 className="text-5xl font-black leading-tight tracking-normal text-slate-950 xl:text-6xl">
+                Galeri indah untuk setiap momen.
+              </h1>
+              <p className="mt-6 max-w-lg text-lg leading-8 text-slate-700">
+                Kelola foto, video, dan kenangan SDN Wanasari 15 dengan tampilan yang rapi dan mudah diakses.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative grid min-h-screen place-items-center overflow-hidden bg-gradient-to-br from-white via-blue-50 to-sapphire-100 px-4 py-8 sm:px-6">
+          <div className="absolute -right-24 top-16 h-72 w-72 rounded-full bg-blue-200/45 blur-3xl" />
+          <div className="absolute -bottom-24 left-10 h-80 w-80 rounded-full bg-sapphire-100/70 blur-3xl" />
+
+          <div className="relative w-full max-w-xl">
+            <div className="mb-6 flex items-center gap-3 lg:hidden">
+              <span className="grid h-12 w-12 place-items-center rounded-xl bg-sapphire-700 text-white shadow-soft">
+                <Aperture size={24} />
+              </span>
+              <div>
+                <p className="text-base font-black uppercase tracking-[0.1em] text-slate-950">Galeri SDN Wanasari 15</p>
+                <p className="text-sm text-slate-600">Kelola momen, bagikan cerita.</p>
+              </div>
+            </div>
+
+            <section className="rounded-[28px] border border-white/80 bg-gradient-to-br from-white/95 via-blue-50/95 to-white/90 p-6 shadow-[0_28px_90px_rgba(30,64,175,0.16)] backdrop-blur sm:p-9">
+              <Link to="/" className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-sapphire-700 hover:text-sapphire-800">
+                <ArrowLeft size={17} />
+                Kembali ke galeri
+              </Link>
+
+              <div className="mb-8">
+                <span className="mb-6 grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-br from-blue-50 to-white text-sapphire-700 shadow-sm">
+                  <ShieldCheck size={29} />
+                </span>
+                <h1 className="text-3xl font-black tracking-normal text-slate-950 sm:text-4xl">Login Admin</h1>
+                <p className="mt-3 max-w-md text-base leading-7 text-slate-600">
+                  Masuk dengan username dan password untuk mengelola konten galeri.
+                </p>
+              </div>
+
+              <form className="space-y-5" onSubmit={handleSubmit}>
+                <label className="block">
+                  <span className="mb-2 block text-sm font-black text-slate-900">Username</span>
+                  <span className="relative block">
+                    <User className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={19} />
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={(event) => setUsername(event.target.value)}
+                      autoComplete="username"
+                      className="h-14 w-full rounded-lg border border-blue-100 bg-white/90 pl-12 pr-4 text-base font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-sapphire-500 focus:ring-4 focus:ring-blue-100"
+                      required
+                    />
+                  </span>
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-sm font-black text-slate-900">Password</span>
+                  <span className="relative block">
+                    <Lock className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={19} />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      autoComplete="current-password"
+                      className="h-14 w-full rounded-lg border border-blue-100 bg-white/90 pl-12 pr-12 text-base font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-sapphire-500 focus:ring-4 focus:ring-blue-100"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((shown) => !shown)}
+                      className="absolute right-3 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-md text-slate-400 transition hover:bg-blue-50 hover:text-sapphire-700"
+                      aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+                    >
+                      {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
+                    </button>
+                  </span>
+                </label>
+
+                {errorMessage ? (
+                  <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
+                    {errorMessage}
+                  </div>
+                ) : null}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="inline-flex h-14 w-full items-center justify-center gap-3 rounded-lg bg-gradient-to-r from-sapphire-700 to-blue-600 px-5 text-base font-black text-white shadow-[0_16px_36px_rgba(30,64,175,0.24)] transition hover:from-sapphire-800 hover:to-sapphire-700 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  <LogIn size={21} />
+                  {loading ? "Masuk..." : "Masuk"}
+                </button>
+              </form>
+            </section>
+
+            <div className="mt-7 flex items-center justify-center gap-2 text-sm font-semibold text-slate-500">
+              <ShieldCheck size={16} />
+              Akses aman untuk pengelolaan galeri Anda
+            </div>
+          </div>
+        </section>
+      </div>
     </main>
   );
 }
