@@ -1,5 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDown, ArrowUp, ArrowUpDown, Edit3, FolderInput, LogOut, RefreshCw, Save, Search, Trash2, X } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Edit3,
+  FolderInput,
+  LogOut,
+  RefreshCw,
+  Save,
+  Search,
+  Trash2,
+  X,
+} from "lucide-react";
 import Navbar from "../components/Navbar.jsx";
 import { EMPTY_FORM, FOLDER_CATEGORIES } from "../constants/media.js";
 import { getDriveFileId } from "../lib/drive.js";
@@ -88,6 +101,30 @@ export default function AdminPage() {
     });
   }, [adminSearchQuery, items, sortConfig]);
 
+  const duplicateInfo = useMemo(() => {
+    const groups = new Map();
+
+    for (const item of items) {
+      const fileId = getDriveFileId(item.drive_url);
+      if (!fileId) continue;
+
+      const currentGroup = groups.get(fileId) || [];
+      currentGroup.push(item);
+      groups.set(fileId, currentGroup);
+    }
+
+    const duplicateGroups = Array.from(groups.values()).filter((group) => group.length > 1);
+    const duplicateIds = new Set(duplicateGroups.flatMap((group) => group.map((item) => item.id)));
+    const removableDuplicateIds = duplicateGroups.flatMap((group) => group.slice(1).map((item) => item.id));
+
+    return {
+      duplicateGroups,
+      duplicateIds,
+      removableDuplicateIds,
+      duplicateExtraCount: removableDuplicateIds.length,
+    };
+  }, [items]);
+
   const allSelected = visibleItems.length > 0 && visibleItems.every((item) => selectedIds.includes(item.id));
 
   function getSortIcon(key) {
@@ -144,6 +181,11 @@ export default function AdminPage() {
     }
 
     setSelectedIds((current) => Array.from(new Set([...current, ...visibleIds])));
+  }
+
+  function selectRemovableDuplicates() {
+    setSelectedIds((current) => Array.from(new Set([...current, ...duplicateInfo.removableDuplicateIds])));
+    setAdminSearchQuery("");
   }
 
   function handleChange(event) {
@@ -557,6 +599,32 @@ export default function AdminPage() {
             </div>
           </div>
 
+          {duplicateInfo.duplicateGroups.length ? (
+            <div className="border-b border-amber-200 bg-amber-50 px-5 py-4">
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex gap-3">
+                  <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-md bg-amber-100 text-amber-700">
+                    <AlertTriangle size={19} />
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-black text-amber-900">Media duplikat terdeteksi</h3>
+                    <p className="mt-1 text-sm leading-6 text-amber-800">
+                      Ada {duplicateInfo.duplicateExtraCount} media tambahan dari file Google Drive yang sama. Sistem akan memilih
+                      duplikat tambahan dan menyisakan satu data pertama untuk tiap file.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={selectRemovableDuplicates}
+                  className="inline-flex h-10 shrink-0 items-center justify-center rounded-md bg-amber-600 px-4 text-sm font-bold text-white transition hover:bg-amber-700"
+                >
+                  Pilih Duplikat
+                </button>
+              </div>
+            </div>
+          ) : null}
+
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-100">
               <thead className="bg-blue-50">
@@ -622,7 +690,14 @@ export default function AdminPage() {
                         />
                       </td>
                       <td className="max-w-xs px-4 py-3">
-                        <div className="truncate text-sm font-bold text-slate-950">{item.title}</div>
+                        <div className="flex min-w-0 items-center gap-2">
+                          <div className="truncate text-sm font-bold text-slate-950">{item.title}</div>
+                          {duplicateInfo.duplicateIds.has(item.id) ? (
+                            <span className="shrink-0 rounded-md bg-amber-100 px-2 py-0.5 text-[11px] font-black uppercase tracking-wide text-amber-700">
+                              Duplikat
+                            </span>
+                          ) : null}
+                        </div>
                         <div className="line-clamp-2 text-xs leading-5 text-slate-500">{item.description}</div>
                       </td>
                       <td className="px-4 py-3 text-sm text-slate-700">{getTypeLabel(item.type)}</td>
