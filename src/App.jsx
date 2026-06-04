@@ -3,12 +3,14 @@ import AdminAccountsPage from "./pages/AdminAccountsPage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import GalleryPage from "./pages/GalleryPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
+import YouTubePage from "./pages/YouTubePage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<GalleryPage />} />
+      <Route path="/youtube" element={<YouTubePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route
         path="/admin"

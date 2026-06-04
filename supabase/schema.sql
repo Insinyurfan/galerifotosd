@@ -18,6 +18,23 @@ on public.media_gallery
 for select
 using (true);
 
+create table if not exists public.youtube_gallery (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  title text not null,
+  description text,
+  youtube_id text not null unique,
+  constraint youtube_gallery_youtube_id_format check (youtube_id ~ '^[A-Za-z0-9_-]{6,32}$')
+);
+
+alter table public.youtube_gallery enable row level security;
+
+drop policy if exists "Public can read youtube gallery" on public.youtube_gallery;
+create policy "Public can read youtube gallery"
+on public.youtube_gallery
+for select
+using (true);
+
 create table if not exists public.admin_profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   created_at timestamptz not null default now(),
@@ -86,6 +103,28 @@ with check (true);
 drop policy if exists "Authenticated users can delete media gallery" on public.media_gallery;
 create policy "Authenticated users can delete media gallery"
 on public.media_gallery
+for delete
+to authenticated
+using (true);
+
+drop policy if exists "Authenticated users can insert youtube gallery" on public.youtube_gallery;
+create policy "Authenticated users can insert youtube gallery"
+on public.youtube_gallery
+for insert
+to authenticated
+with check (true);
+
+drop policy if exists "Authenticated users can update youtube gallery" on public.youtube_gallery;
+create policy "Authenticated users can update youtube gallery"
+on public.youtube_gallery
+for update
+to authenticated
+using (true)
+with check (true);
+
+drop policy if exists "Authenticated users can delete youtube gallery" on public.youtube_gallery;
+create policy "Authenticated users can delete youtube gallery"
+on public.youtube_gallery
 for delete
 to authenticated
 using (true);

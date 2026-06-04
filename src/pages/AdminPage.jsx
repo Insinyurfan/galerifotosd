@@ -5,8 +5,10 @@ import {
   ArrowUp,
   ArrowUpDown,
   Edit3,
+  ExternalLink,
   FolderInput,
   LogOut,
+  PlayCircle,
   RefreshCw,
   Save,
   Search,
@@ -18,9 +20,15 @@ import { EMPTY_FORM, FOLDER_CATEGORIES } from "../constants/media.js";
 import { getDriveFileId } from "../lib/drive.js";
 import { importGoogleDriveFolder } from "../lib/googleDriveImport.js";
 import { supabase } from "../lib/supabase.js";
+import { getYouTubeId, getYouTubeThumbnailUrl, getYouTubeWatchUrl } from "../lib/youtube.js";
 
 const BULK_DELETE_BATCH_SIZE = 25;
 const MAIN_DRIVE_FOLDER_URL = "https://drive.google.com/drive/u/7/folders/14kTfSBYmWNUZB3Qft4iHKoUEtnze9QWd";
+const EMPTY_YOUTUBE_FORM = {
+  title: "",
+  description: "",
+  youtube_input: "",
+};
 
 function getTypeLabel(type) {
   return type === "image" ? "Foto" : "Video";
@@ -40,8 +48,17 @@ export default function AdminPage() {
   const dragTouchedIds = useRef(new Set());
   const dragSelectionMode = useRef(true);
   const [session, setSession] = useState(null);
+  const [activeAdminTab, setActiveAdminTab] = useState("gdrive");
   const [items, setItems] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [youtubeItems, setYoutubeItems] = useState([]);
+  const [youtubeForm, setYoutubeForm] = useState(EMPTY_YOUTUBE_FORM);
+  const [youtubeEditingId, setYoutubeEditingId] = useState("");
+  const [youtubeSearchQuery, setYoutubeSearchQuery] = useState("");
+  const [youtubeLoading, setYoutubeLoading] = useState(true);
+  const [youtubeSaving, setYoutubeSaving] = useState(false);
+  const [youtubeMessage, setYoutubeMessage] = useState("");
+  const [youtubeErrorMessage, setYoutubeErrorMessage] = useState("");
   const [adminSearchQuery, setAdminSearchQuery] = useState("");
   const [duplicatePanelOpen, setDuplicatePanelOpen] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: "created_at", direction: "desc" });
@@ -60,6 +77,7 @@ export default function AdminPage() {
       setSession(data.session);
     });
     fetchItems();
+    fetchYoutubeItems();
   }, []);
 
   useEffect(() => {
@@ -98,6 +116,24 @@ export default function AdminPage() {
     setLoading(false);
   }
 
+  async function fetchYoutubeItems() {
+    setYoutubeLoading(true);
+    setYoutubeErrorMessage("");
+
+    const { data, error } = await supabase
+      .from("youtube_gallery")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      setYoutubeErrorMessage(error.message);
+    } else {
+      setYoutubeItems(data || []);
+    }
+
+    setYoutubeLoading(false);
+  }
+
   const visibleItems = useMemo(() => {
     const query = adminSearchQuery.trim().toLowerCase();
     const filtered = items.filter((item) => {
@@ -113,6 +149,15 @@ export default function AdminPage() {
       return sortConfig.direction === "asc" ? result : -result;
     });
   }, [adminSearchQuery, items, sortConfig]);
+
+  const visibleYoutubeItems = useMemo(() => {
+    const query = youtubeSearchQuery.trim().toLowerCase();
+
+    return youtubeItems.filter((item) => {
+      const searchableText = `${item.title || ""} ${item.description || ""} ${item.youtube_id || ""}`.toLowerCase();
+      return !query || searchableText.includes(query);
+    });
+  }, [youtubeItems, youtubeSearchQuery]);
 
   const duplicateInfo = useMemo(() => {
     const groups = new Map();
@@ -216,6 +261,80 @@ export default function AdminPage() {
   function handleChange(event) {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
+  }
+
+  function handleYoutubeChange(event) {
+    const { name, value } = event.target;
+    setYoutubeForm((current) => ({ ...current, [name]: value }));
+  }
+
+  function resetYoutubeForm() {
+    setYoutubeForm(EMPTY_YOUTUBE_FORM);
+    setYoutubeEditingId("");
+  }
+
+  function startYoutubeEdit(item) {
+    setYoutubeEditingId(item.id);
+    setYoutubeForm({
+      title: item.title || "",
+      description: item.description || "",
+      youtube_input: item.youtube_id || "",
+    });
+    setYoutubeMessage("");
+    setYoutubeErrorMessage("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function handleYoutubeSubmit(event) {
+    event.preventDefault();
+    setYoutubeSaving(true);
+    setYoutubeMessage("");
+    setYoutubeErrorMessage("");
+
+    const youtubeId = getYouTubeId(youtubeForm.youtube_input);
+
+    if (!youtubeId) {
+      setYoutubeErrorMessage("ID atau link YouTube tidak valid.");
+      setYoutubeSaving(false);
+      return;
+    }
+
+    const payload = {
+      title: youtubeForm.title.trim(),
+      description: youtubeForm.description.trim(),
+      youtube_id: youtubeId,
+    };
+
+    const result = youtubeEditingId
+      ? await supabase.from("youtube_gallery").update(payload).eq("id", youtubeEditingId)
+      : await supabase.from("youtube_gallery").insert(payload);
+
+    if (result.error) {
+      setYoutubeErrorMessage(result.error.message);
+    } else {
+      setYoutubeMessage(youtubeEditingId ? "Video YouTube berhasil diperbarui." : "Video YouTube berhasil ditambahkan.");
+      resetYoutubeForm();
+      await fetchYoutubeItems();
+    }
+
+    setYoutubeSaving(false);
+  }
+
+  async function handleYoutubeDelete(item) {
+    const confirmed = window.confirm(`Hapus video YouTube "${item.title}"?`);
+    if (!confirmed) return;
+
+    setYoutubeErrorMessage("");
+    setYoutubeMessage("");
+
+    const { error } = await supabase.from("youtube_gallery").delete().eq("id", item.id);
+    if (error) {
+      setYoutubeErrorMessage(error.message);
+      return;
+    }
+
+    setYoutubeMessage("Video YouTube berhasil dihapus.");
+    await fetchYoutubeItems();
   }
 
   function changeInputMode(nextMode) {
@@ -403,6 +522,30 @@ export default function AdminPage() {
           </button>
         </section>
 
+        <div className="mb-6 inline-flex rounded-lg border border-blue-100 bg-blue-50 p-1">
+          <button
+            type="button"
+            onClick={() => setActiveAdminTab("gdrive")}
+            className={`h-10 rounded-md px-4 text-sm font-bold transition ${
+              activeAdminTab === "gdrive" ? "bg-white text-sapphire-700 shadow-sm" : "text-slate-600 hover:text-sapphire-700"
+            }`}
+          >
+            GDrive
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveAdminTab("youtube")}
+            className={`inline-flex h-10 items-center gap-2 rounded-md px-4 text-sm font-bold transition ${
+              activeAdminTab === "youtube" ? "bg-white text-sapphire-700 shadow-sm" : "text-slate-600 hover:text-sapphire-700"
+            }`}
+          >
+            <PlayCircle size={17} />
+            YouTube
+          </button>
+        </div>
+
+        {activeAdminTab === "gdrive" ? (
+          <>
         <section className="mb-8 rounded-lg border border-blue-100 bg-white p-5 shadow-soft">
           <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
             <div>
@@ -815,6 +958,207 @@ export default function AdminPage() {
             </table>
           </div>
         </section>
+          </>
+        ) : (
+          <>
+            <section className="mb-8 rounded-lg border border-blue-100 bg-white p-5 shadow-soft">
+              <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                <div>
+                  <div className="mb-1 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.14em] text-red-700">
+                    <PlayCircle size={17} />
+                    YouTube
+                  </div>
+                  <h2 className="text-xl font-black text-slate-950">
+                    {youtubeEditingId ? "Edit Video YouTube" : "Tambah Video YouTube"}
+                  </h2>
+                  <p className="mt-1 text-sm text-slate-600">
+                    Masukkan ID video atau link YouTube. Data ini tampil di halaman YouTube dan terpisah dari galeri GDrive.
+                  </p>
+                </div>
+                {youtubeEditingId ? (
+                  <button
+                    type="button"
+                    onClick={resetYoutubeForm}
+                    className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-slate-100 px-3 text-sm font-bold text-slate-700 transition hover:bg-slate-200"
+                  >
+                    <X size={17} />
+                    Batal Edit
+                  </button>
+                ) : null}
+              </div>
+
+              <form className="grid gap-4 lg:grid-cols-2" onSubmit={handleYoutubeSubmit}>
+                <label className="block">
+                  <span className="mb-1.5 block text-sm font-bold text-slate-800">Judul</span>
+                  <input
+                    name="title"
+                    value={youtubeForm.title}
+                    onChange={handleYoutubeChange}
+                    className="h-11 w-full rounded-md border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-sapphire-500 focus:ring-4 focus:ring-blue-100"
+                    required
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="mb-1.5 block text-sm font-bold text-slate-800">ID / Link YouTube</span>
+                  <input
+                    name="youtube_input"
+                    value={youtubeForm.youtube_input}
+                    onChange={handleYoutubeChange}
+                    placeholder="dQw4w9WgXcQ atau https://youtu.be/dQw4w9WgXcQ"
+                    className="h-11 w-full rounded-md border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-sapphire-500 focus:ring-4 focus:ring-blue-100"
+                    required
+                  />
+                  <span className="mt-1.5 block text-xs leading-5 text-slate-500">
+                    Sistem akan menyimpan ID video saja agar embed YouTube tetap rapi.
+                  </span>
+                </label>
+
+                <label className="block lg:col-span-2">
+                  <span className="mb-1.5 block text-sm font-bold text-slate-800">Deskripsi</span>
+                  <textarea
+                    name="description"
+                    value={youtubeForm.description}
+                    onChange={handleYoutubeChange}
+                    rows="4"
+                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-3 text-sm outline-none transition focus:border-sapphire-500 focus:ring-4 focus:ring-blue-100"
+                  />
+                </label>
+
+                {youtubeErrorMessage ? (
+                  <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 lg:col-span-2">
+                    {youtubeErrorMessage}
+                  </div>
+                ) : null}
+                {youtubeMessage ? (
+                  <div className="rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-medium text-sapphire-700 lg:col-span-2">
+                    {youtubeMessage}
+                  </div>
+                ) : null}
+
+                <div className="flex flex-col gap-3 sm:flex-row lg:col-span-2">
+                  <button
+                    type="submit"
+                    disabled={youtubeSaving}
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-sapphire-700 px-5 text-sm font-bold text-white transition hover:bg-sapphire-800 disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    <Save size={18} />
+                    {youtubeSaving ? "Menyimpan..." : youtubeEditingId ? "Simpan Perubahan" : "Tambah Video YouTube"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={fetchYoutubeItems}
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-blue-100 bg-white px-5 text-sm font-bold text-slate-700 transition hover:bg-blue-50 hover:text-sapphire-700"
+                  >
+                    <RefreshCw size={18} />
+                    Refresh
+                  </button>
+                </div>
+              </form>
+            </section>
+
+            <section className="overflow-hidden rounded-lg border border-blue-100 bg-white shadow-soft">
+              <div className="flex flex-col justify-between gap-3 border-b border-blue-100 px-5 py-4 sm:flex-row sm:items-center">
+                <div>
+                  <h2 className="text-xl font-black text-slate-950">Daftar Video YouTube</h2>
+                  <p className="mt-1 text-sm text-slate-500">
+                    {visibleYoutubeItems.length} dari {youtubeItems.length} video ditampilkan
+                  </p>
+                </div>
+                <label className="relative block min-w-0 sm:w-80">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={17} />
+                  <input
+                    value={youtubeSearchQuery}
+                    onChange={(event) => setYoutubeSearchQuery(event.target.value)}
+                    placeholder="Cari judul, deskripsi, ID"
+                    className="h-10 w-full rounded-md border border-slate-200 bg-white pl-10 pr-3 text-sm outline-none transition focus:border-sapphire-500 focus:ring-4 focus:ring-blue-100"
+                  />
+                </label>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-slate-100">
+                  <thead className="bg-blue-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-black uppercase tracking-wider text-sapphire-800">Video</th>
+                      <th className="px-4 py-3 text-left text-xs font-black uppercase tracking-wider text-sapphire-800">ID YouTube</th>
+                      <th className="px-4 py-3 text-left text-xs font-black uppercase tracking-wider text-sapphire-800">Link</th>
+                      <th className="px-4 py-3 text-right text-xs font-black uppercase tracking-wider text-sapphire-800">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {youtubeLoading ? (
+                      <tr>
+                        <td colSpan="4" className="px-4 py-8 text-center text-sm text-slate-500">
+                          Memuat video YouTube...
+                        </td>
+                      </tr>
+                    ) : visibleYoutubeItems.length ? (
+                      visibleYoutubeItems.map((item) => (
+                        <tr key={item.id} className="hover:bg-slate-50">
+                          <td className="max-w-md px-4 py-3">
+                            <div className="flex min-w-0 items-center gap-3">
+                              <img
+                                src={getYouTubeThumbnailUrl(item.youtube_id)}
+                                alt=""
+                                className="h-14 w-24 rounded-md bg-slate-100 object-cover"
+                                loading="lazy"
+                              />
+                              <div className="min-w-0">
+                                <div className="truncate text-sm font-bold text-slate-950">{item.title}</div>
+                                <div className="line-clamp-2 text-xs leading-5 text-slate-500">{item.description}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-sm font-semibold text-slate-700">{item.youtube_id}</td>
+                          <td className="max-w-xs px-4 py-3">
+                            <a
+                              href={getYouTubeWatchUrl(item.youtube_id)}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1.5 text-sm font-semibold text-sapphire-700 hover:underline"
+                            >
+                              <ExternalLink size={15} />
+                              Buka YouTube
+                            </a>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex justify-end gap-2">
+                              <button
+                                type="button"
+                                onClick={() => startYoutubeEdit(item)}
+                                className="grid h-9 w-9 place-items-center rounded-md bg-blue-50 text-sapphire-700 transition hover:bg-blue-100"
+                                aria-label={`Edit ${item.title}`}
+                                title="Edit"
+                              >
+                                <Edit3 size={16} />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleYoutubeDelete(item)}
+                                className="grid h-9 w-9 place-items-center rounded-md bg-red-50 text-red-600 transition hover:bg-red-100"
+                                aria-label={`Hapus ${item.title}`}
+                                title="Hapus"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="4" className="px-4 py-8 text-center text-sm text-slate-500">
+                          {youtubeItems.length ? "Tidak ada video yang cocok dengan pencarian." : "Belum ada video YouTube."}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </>
+        )}
       </main>
     </div>
   );

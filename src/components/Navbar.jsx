@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Camera, Images, LayoutDashboard, LogIn, Menu, UserCog, X } from "lucide-react";
+import { Camera, Images, LayoutDashboard, LogIn, Menu, PlayCircle, UserCog, X } from "lucide-react";
 
 export default function Navbar({ session }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -35,6 +35,19 @@ export default function Navbar({ session }) {
             <span className="inline-flex items-center gap-2">
               <Images size={16} />
               Galeri
+            </span>
+          </NavLink>
+          <NavLink
+            to="/youtube"
+            className={({ isActive }) =>
+              `rounded-md px-3 py-2 text-sm font-semibold transition ${
+                isActive ? "bg-blue-50 text-sapphire-700" : "text-slate-600 hover:bg-slate-100"
+              }`
+            }
+          >
+            <span className="inline-flex items-center gap-2">
+              <PlayCircle size={16} />
+              YouTube
             </span>
           </NavLink>
           <NavLink
@@ -89,6 +102,18 @@ export default function Navbar({ session }) {
             >
               <Images size={17} />
               Galeri
+            </NavLink>
+            <NavLink
+              to="/youtube"
+              onClick={closeMobileMenu}
+              className={({ isActive }) =>
+                `inline-flex h-11 items-center gap-2 rounded-md px-3 text-sm font-semibold transition ${
+                  isActive ? "bg-blue-50 text-sapphire-700" : "text-slate-700 hover:bg-slate-100"
+                }`
+              }
+            >
+              <PlayCircle size={17} />
+              YouTube
             </NavLink>
             <NavLink
               to={adminTarget}
