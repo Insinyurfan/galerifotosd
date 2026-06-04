@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import AdminAccountsPage from "./pages/AdminAccountsPage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import GalleryPage from "./pages/GalleryPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
@@ -14,6 +15,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <AdminPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/accounts"
+        element={
+          <ProtectedRoute>
+            <AdminAccountsPage />
           </ProtectedRoute>
         }
       />

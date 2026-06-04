@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Camera, Images, LayoutDashboard, LogIn, Menu, X } from "lucide-react";
+import { Camera, Images, LayoutDashboard, LogIn, Menu, UserCog, X } from "lucide-react";
 
 export default function Navbar({ session }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -48,6 +48,20 @@ export default function Navbar({ session }) {
             <AdminIcon size={16} />
             {adminLabel}
           </NavLink>
+          {session ? (
+            <NavLink
+              to="/admin/accounts"
+              className={({ isActive }) =>
+                `grid h-10 w-10 place-items-center rounded-md text-sm font-semibold transition ${
+                  isActive ? "bg-sapphire-700 text-white" : "border border-blue-100 bg-white text-sapphire-700 hover:bg-blue-50"
+                }`
+              }
+              aria-label="Pengaturan akun admin"
+              title="Pengaturan akun admin"
+            >
+              <UserCog size={18} />
+            </NavLink>
+          ) : null}
         </nav>
 
         <button
@@ -88,6 +102,20 @@ export default function Navbar({ session }) {
               <AdminIcon size={17} />
               {adminLabel}
             </NavLink>
+            {session ? (
+              <NavLink
+                to="/admin/accounts"
+                onClick={closeMobileMenu}
+                className={({ isActive }) =>
+                  `inline-flex h-11 items-center gap-2 rounded-md px-3 text-sm font-semibold transition ${
+                    isActive ? "bg-blue-50 text-sapphire-700" : "text-slate-700 hover:bg-slate-100"
+                  }`
+                }
+              >
+                <UserCog size={17} />
+                Pengaturan Akun
+              </NavLink>
+            ) : null}
           </div>
         </nav>
       ) : null}
