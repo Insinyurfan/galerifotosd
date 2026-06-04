@@ -21,16 +21,19 @@ Isi dengan nilai dari Supabase Project Settings > API:
 ```env
 VITE_SUPABASE_URL=https://your-project-id.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
 VITE_ADMIN_USERNAME=Irfan
 VITE_ADMIN_EMAIL=irfan@admin.local
 VITE_GOOGLE_DRIVE_API_KEY=your-google-drive-api-key
 ```
 
+`SUPABASE_SERVICE_ROLE_KEY` hanya boleh dipakai di server atau Vercel Environment Variables. Jangan masukkan key ini ke kode frontend.
+
 3. Jalankan query SQL di Supabase SQL Editor:
 
 File query tersedia di `supabase/schema.sql`.
 
-4. Buat akun admin:
+4. Buat akun admin pertama:
 
 Di Supabase Dashboard, buka Authentication > Users, lalu tambahkan user admin dengan email dan password.
 
@@ -44,6 +47,8 @@ where email = 'email-admin@domain.com';
 ```
 
 Ganti `admin` dengan username yang diinginkan dan ganti email sesuai email user Auth. Di halaman website, admin cukup login dengan username dan password.
+
+Setelah admin pertama berhasil login, akun admin berikutnya bisa ditambah, diedit, diganti password, atau dihapus dari panel `Kelola Akun Admin` di halaman `/admin`. Fitur ini membutuhkan `SUPABASE_SERVICE_ROLE_KEY` di environment server/deploy.
 
 5. Aktifkan import folder Google Drive:
 
