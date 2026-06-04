@@ -65,7 +65,7 @@ export default function YouTubePage() {
             </div>
             <h1 className="text-3xl font-black tracking-normal text-slate-950">Galeri YouTube</h1>
             <p className="mt-2 text-base leading-7 text-slate-600 sm:text-lg">
-              Kumpulan video YouTube SDN Wanasari 15 yang terpisah dari galeri Google Drive.
+              Kumpulan highlight acara kelulusan dan tasyakuran kelas 6 SDN Wanasari 15 pada 02 Juni 2026.
             </p>
           </div>
 
