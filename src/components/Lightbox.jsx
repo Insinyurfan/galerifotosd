@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Download, ExternalLink, X } from "lucide-react";
-import { getDownloadUrl, getDriveViewUrl, getImageCandidates } from "../lib/drive.js";
+import { getDownloadUrl, getDriveViewUrl, getImageCandidates, getVideoEmbedUrl } from "../lib/drive.js";
 
 export default function Lightbox({ media, onClose }) {
+  const isVideo = media?.type === "video";
   const imageCandidates = getImageCandidates(media?.drive_url || "");
+  const videoEmbedUrl = getVideoEmbedUrl(media?.drive_url || "");
   const [imageIndex, setImageIndex] = useState(0);
   const [imageFailed, setImageFailed] = useState(false);
 
@@ -40,7 +42,22 @@ export default function Lightbox({ media, onClose }) {
         >
           <X size={20} />
         </button>
-        {imageFailed ? (
+        {isVideo ? (
+          <div className="overflow-hidden rounded-lg bg-black shadow-soft">
+            {videoEmbedUrl ? (
+              <iframe
+                title={media.title}
+                src={videoEmbedUrl}
+                className="aspect-video max-h-[72vh] w-full"
+                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                allowFullScreen
+                loading="eager"
+              />
+            ) : (
+              <video src={media.drive_url} controls className="aspect-video max-h-[72vh] w-full bg-black object-contain" />
+            )}
+          </div>
+        ) : imageFailed ? (
           <div className="grid min-h-[45vh] place-items-center rounded-lg bg-white px-5 text-center shadow-soft">
             <div>
               <p className="text-base font-bold text-slate-900">Preview gambar belum tersedia</p>

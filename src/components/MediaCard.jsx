@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Download, ExternalLink, Image, PlayCircle } from "lucide-react";
+import { Download, ExternalLink, Image, Maximize2, PlayCircle } from "lucide-react";
 import { getDownloadUrl, getDriveViewUrl, getImageCandidates, getVideoEmbedUrl } from "../lib/drive.js";
 
 export default function MediaCard({ media, onOpen }) {
@@ -53,7 +53,7 @@ export default function MediaCard({ media, onOpen }) {
             title={media.title}
             src={videoEmbedUrl}
             className="h-full w-full"
-            allow="autoplay; encrypted-media; picture-in-picture"
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
             allowFullScreen
             loading="lazy"
           />
@@ -65,6 +65,17 @@ export default function MediaCard({ media, onOpen }) {
           {isImage ? <Image size={14} /> : <PlayCircle size={14} />}
           {isImage ? "Foto" : "Video"}
         </div>
+        {!isImage ? (
+          <button
+            type="button"
+            onClick={() => onOpen(media)}
+            className="absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-md bg-white/95 text-sapphire-800 shadow-sm transition hover:bg-blue-50"
+            aria-label="Perbesar video"
+            title="Perbesar video"
+          >
+            <Maximize2 size={18} />
+          </button>
+        ) : null}
       </div>
 
       <div className="space-y-3 p-4">
