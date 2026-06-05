@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { Download, ExternalLink, Image, Maximize2, PlayCircle } from "lucide-react";
-import { getDownloadUrl, getDriveViewUrl, getImageCandidates, getVideoEmbedUrl } from "../lib/drive.js";
+import { getDownloadUrl, getDriveViewUrl, getImageCandidates } from "../lib/drive.js";
 
 export default function MediaCard({ media, onOpen }) {
   const isImage = media.type === "image";
   const imageCandidates = getImageCandidates(media.drive_url);
   const [imageIndex, setImageIndex] = useState(0);
   const [imageFailed, setImageFailed] = useState(false);
-  const videoEmbedUrl = getVideoEmbedUrl(media.drive_url);
   const downloadUrl = getDownloadUrl(media.drive_url);
   const driveViewUrl = getDriveViewUrl(media.drive_url);
 
@@ -48,17 +47,32 @@ export default function MediaCard({ media, onOpen }) {
               />
             )}
           </button>
-        ) : videoEmbedUrl ? (
-          <iframe
-            title={media.title}
-            src={videoEmbedUrl}
-            className="h-full w-full"
-            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-            allowFullScreen
-            loading="lazy"
-          />
         ) : (
-          <video src={media.drive_url} controls className="h-full w-full object-cover" />
+          <button type="button" className="group h-full w-full" onClick={() => onOpen(media)}>
+            {imageFailed ? (
+              <div className="grid h-full w-full place-items-center bg-slate-100 px-5 text-center">
+                <div>
+                  <PlayCircle className="mx-auto text-slate-400" size={38} />
+                  <p className="mt-3 text-sm font-semibold text-slate-600">Preview video belum tersedia</p>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">Video tetap bisa dibuka lewat tombol Drive.</p>
+                </div>
+              </div>
+            ) : (
+              <>
+                <img
+                  src={imageCandidates[imageIndex]}
+                  alt={media.title}
+                  className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+                  loading="lazy"
+                  onError={handleImageError}
+                />
+                <span className="absolute inset-0 bg-slate-950/25 transition group-hover:bg-slate-950/35" />
+                <span className="absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/95 text-sapphire-800 shadow-soft">
+                  <PlayCircle size={34} />
+                </span>
+              </>
+            )}
+          </button>
         )}
 
         <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-md bg-white/95 px-2.5 py-1 text-xs font-bold text-sapphire-800 shadow-sm">
