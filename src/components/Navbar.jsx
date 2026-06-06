@@ -5,7 +5,9 @@ import {
   Home,
   Image,
   Info,
+  ImageUp,
   LayoutDashboard,
+  LoaderCircle,
   LogIn,
   LogOut,
   Menu,
@@ -17,7 +19,7 @@ import {
   Youtube,
 } from "lucide-react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-import { SCHOOL_LOGO, SITE_TITLE } from "../constants/site.js";
+import { useSiteSettings } from "../hooks/useSiteSettings.js";
 import { supabase } from "../lib/supabase.js";
 
 const PUBLIC_LINKS = [
@@ -31,14 +33,21 @@ const PUBLIC_LINKS = [
 export default function Navbar({ session }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { settings, uploadImage } = useSiteSettings();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [logoPreviewOpen, setLogoPreviewOpen] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [logoMessage, setLogoMessage] = useState("");
   const [username, setUsername] = useState("");
 
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
+
+  useEffect(() => {
+    setLogoFailed(false);
+  }, [settings.logo_url]);
 
   useEffect(() => {
     let active = true;
@@ -72,6 +81,23 @@ export default function Navbar({ session }) {
     navigate("/", { replace: true });
   }
 
+  async function handleLogoChange(event) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    setLogoUploading(true);
+    setLogoMessage("");
+    try {
+      await uploadImage(file, "school-logo", "logo_url");
+      setLogoMessage("Logo berhasil diperbarui.");
+    } catch (error) {
+      setLogoMessage(error.message || "Gagal mengunggah logo.");
+    } finally {
+      setLogoUploading(false);
+    }
+  }
+
   function renderLogo(className) {
     if (logoFailed) {
       return <span className={`${className} grid place-items-center bg-blue-700 font-black text-white`}>W15</span>;
@@ -79,7 +105,7 @@ export default function Navbar({ session }) {
 
     return (
       <img
-        src={SCHOOL_LOGO}
+        src={settings.logo_url || "/logo-wanasari.png"}
         alt="Logo SDN Wanasari 15"
         className={`${className} object-contain`}
         onError={() => setLogoFailed(true)}
@@ -158,7 +184,7 @@ export default function Navbar({ session }) {
           >
             {renderLogo("site-logo")}
           </button>
-          <Link to="/">{SITE_TITLE}</Link>
+          <Link to="/">{settings.site_title}</Link>
         </div>
 
         <div className="site-header-status">
@@ -191,6 +217,14 @@ export default function Navbar({ session }) {
           <div className="logo-preview-card" onClick={(event) => event.stopPropagation()}>
             {renderLogo("logo-preview-image")}
             <p>Logo SDN Wanasari 15</p>
+            {session ? (
+              <label className={`image-upload-action ${logoUploading ? "disabled" : ""}`}>
+                {logoUploading ? <LoaderCircle className="spin" size={18} /> : <ImageUp size={18} />}
+                {logoUploading ? "Mengunggah..." : "Ganti Logo"}
+                <input type="file" accept="image/*" onChange={handleLogoChange} disabled={logoUploading} />
+              </label>
+            ) : null}
+            {logoMessage ? <span className="upload-message">{logoMessage}</span> : null}
           </div>
         </div>
       ) : null}

@@ -10,10 +10,11 @@ import TikTokPage from "./pages/TikTokPage.jsx";
 import YouTubePage from "./pages/YouTubePage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import SiteTutorial from "./components/SiteTutorial.jsx";
+import { SiteSettingsProvider } from "./contexts/SiteSettingsContext.jsx";
 
 export default function App() {
   return (
-    <>
+    <SiteSettingsProvider>
       <Routes>
         <Route path="/" element={<DashboardPage />} />
         <Route path="/foto" element={<GalleryPage mediaType="image" />} />
@@ -49,6 +50,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <SiteTutorial />
-    </>
+    </SiteSettingsProvider>
   );
 }
