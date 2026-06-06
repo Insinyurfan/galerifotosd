@@ -1,6 +1,6 @@
 export const DEFAULT_SITE_SETTINGS = {
   id: 1,
-  site_title: "Perpisahan Kelas 6 2026 SDN WANASARI 15",
+  site_title: "WEBSITE RESMI DOKUMENTASI PERPISAHAN KELAS 6 SDN WANASARI 15 TAHUN 2026",
   logo_url: "",
   dashboard_badge: "Album Kenangan 2026",
   dashboard_title: "Selamat datang di ruang kenangan perpisahan kelas 6.",
@@ -22,7 +22,7 @@ export const DEFAULT_SITE_SETTINGS = {
   about_title: "Orang di balik website ini",
   about_description: "Sebuah perkenalan singkat dari pengembang ruang kenangan digital SDN Wanasari 15.",
   school_name: "SDN Wanasari 15",
-  school_website_url: "https://sdnwanasari15.blogspot.com/p/dewan-guru-sdn-wanasari-15.html",
+  school_website_url: "https://sdnwanasari15.blogspot.com/",
   school_instagram_url: import.meta.env.VITE_SCHOOL_INSTAGRAM_URL || "https://www.instagram.com/sdnwanasari15/",
   school_tiktok_url: import.meta.env.VITE_SCHOOL_TIKTOK_URL || "https://www.tiktok.com/@sdnwanasari15",
   developer_name: "Irfan",
