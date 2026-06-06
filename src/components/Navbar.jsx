@@ -138,10 +138,6 @@ export default function Navbar({ session }) {
             <span>Selamat datang, {username}</span>
           </div>
         ) : null}
-        <NavLink to="/tentang" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
-          <Info size={21} />
-          <span>Tentang Saya</span>
-        </NavLink>
       </div>
 
       <nav className="sidebar-nav" aria-label="Navigasi utama">
@@ -154,6 +150,10 @@ export default function Navbar({ session }) {
       </nav>
 
       <div className="sidebar-bottom">
+        <NavLink to="/tentang" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
+          <Info size={21} />
+          <span>Tentang Saya</span>
+        </NavLink>
         {session ? (
           <>
             <NavLink to="/admin" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
