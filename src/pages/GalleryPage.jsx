@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Camera, Image, PlayCircle, Search } from "lucide-react";
 import CategoryTabs from "../components/CategoryTabs.jsx";
+import EditablePageHeading from "../components/EditablePageHeading.jsx";
 import Lightbox from "../components/Lightbox.jsx";
 import MediaCard from "../components/MediaCard.jsx";
 import Navbar from "../components/Navbar.jsx";
@@ -51,18 +52,12 @@ export default function GalleryPage({ mediaType = "image" }) {
     <div className="app-shell-page">
       <Navbar session={session} />
       <main className="page-content">
-        <section className="page-heading media-heading">
-          <span className="eyebrow">
-            <PageIcon size={17} />
-            Galeri {isPhotoPage ? "Foto" : "Video"}
-          </span>
-          <h1>{isPhotoPage ? "Kenangan dalam setiap bingkai" : "Putar kembali momen terbaik"}</h1>
-          <p>
-            {isPhotoPage
-              ? "Temukan dokumentasi perpisahan kelas 6 dari berbagai sudut pengambilan."
-              : "Saksikan kembali suasana perpisahan kelas 6 SDN Wanasari 15 dalam bentuk video."}
-          </p>
-        </section>
+        <EditablePageHeading
+          session={session}
+          fieldPrefix={isPhotoPage ? "photo" : "video"}
+          icon={PageIcon}
+          sectionClassName="media-heading"
+        />
 
         <section className="filter-panel">
           <div>

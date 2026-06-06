@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { PlayCircle, Search } from "lucide-react";
 import Navbar from "../components/Navbar.jsx";
+import EditablePageHeading from "../components/EditablePageHeading.jsx";
 import YouTubeCard from "../components/YouTubeCard.jsx";
 import { useSession } from "../hooks/useSession.js";
 import { supabase } from "../lib/supabase.js";
@@ -48,17 +49,14 @@ export default function YouTubePage() {
       <Navbar session={session} />
 
       <main className="page-content">
-        <section className="mb-8 space-y-5">
-          <div className="max-w-3xl">
-            <div className="mb-2 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.18em] text-red-700">
-              <PlayCircle size={17} />
-              Video YouTube
-            </div>
-            <h1 className="text-3xl font-black tracking-normal text-slate-950">Galeri YouTube</h1>
-            <p className="mt-2 text-base leading-7 text-slate-600 sm:text-lg">
-              Kumpulan highlight acara kelulusan dan tasyakuran kelas 6 SDN Wanasari 15 pada 02 Juni 2026.
-            </p>
-          </div>
+        <div className="mb-8 space-y-5">
+          <EditablePageHeading
+            session={session}
+            fieldPrefix="youtube"
+            icon={PlayCircle}
+            eyebrowClassName="youtube-eyebrow"
+            sectionClassName="media-heading"
+          />
 
           <div className="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
             <label className="relative block max-w-xl">
@@ -71,7 +69,7 @@ export default function YouTubePage() {
               />
             </label>
           </div>
-        </section>
+        </div>
 
         {errorMessage ? (
           <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-700">

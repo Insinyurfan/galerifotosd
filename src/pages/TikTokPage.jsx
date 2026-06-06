@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Clapperboard, ExternalLink, Search } from "lucide-react";
 import Navbar from "../components/Navbar.jsx";
+import EditablePageHeading from "../components/EditablePageHeading.jsx";
 import { useSession } from "../hooks/useSession.js";
 import { supabase } from "../lib/supabase.js";
 
@@ -30,14 +31,13 @@ export default function TikTokPage() {
     <div className="app-shell-page">
       <Navbar session={session} />
       <main className="page-content">
-        <section className="page-heading media-heading">
-          <span className="eyebrow tiktok-eyebrow">
-            <Clapperboard size={17} />
-            Galeri TikTok
-          </span>
-          <h1>Video singkat, kenangan yang melekat</h1>
-          <p>Kumpulan video TikTok perpisahan kelas 6 yang ditambahkan langsung melalui dashboard admin.</p>
-        </section>
+        <EditablePageHeading
+          session={session}
+          fieldPrefix="tiktok"
+          icon={Clapperboard}
+          eyebrowClassName="tiktok-eyebrow"
+          sectionClassName="media-heading"
+        />
 
         <section className="filter-panel single-filter">
           <label className="search-box">

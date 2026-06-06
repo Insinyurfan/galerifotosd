@@ -19,6 +19,7 @@ import {
   Youtube,
 } from "lucide-react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import ImageCropModal from "./ImageCropModal.jsx";
 import { useSiteSettings } from "../hooks/useSiteSettings.js";
 import { supabase } from "../lib/supabase.js";
 
@@ -38,6 +39,7 @@ export default function Navbar({ session }) {
   const [logoPreviewOpen, setLogoPreviewOpen] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
   const [logoUploading, setLogoUploading] = useState(false);
+  const [pendingLogo, setPendingLogo] = useState(null);
   const [logoMessage, setLogoMessage] = useState("");
   const [username, setUsername] = useState("");
 
@@ -86,11 +88,25 @@ export default function Navbar({ session }) {
     event.target.value = "";
     if (!file) return;
 
+    if (!file.type.startsWith("image/")) {
+      setLogoMessage("File harus berupa gambar.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setLogoMessage("Ukuran gambar maksimal 5 MB.");
+      return;
+    }
+
+    setPendingLogo(file);
+  }
+
+  async function handleCroppedLogo(file) {
     setLogoUploading(true);
     setLogoMessage("");
     try {
       await uploadImage(file, "school-logo", "logo_url");
       setLogoMessage("Logo berhasil diperbarui.");
+      setPendingLogo(null);
     } catch (error) {
       setLogoMessage(error.message || "Gagal mengunggah logo.");
     } finally {
@@ -115,6 +131,19 @@ export default function Navbar({ session }) {
 
   const sidebarContent = (
     <>
+      <div className="sidebar-top">
+        {session ? (
+          <div className="sidebar-admin-greeting">
+            <CircleUserRound size={21} />
+            <span>Selamat datang, {username}</span>
+          </div>
+        ) : null}
+        <NavLink to="/tentang" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
+          <Info size={21} />
+          <span>Tentang Saya</span>
+        </NavLink>
+      </div>
+
       <nav className="sidebar-nav" aria-label="Navigasi utama">
         {PUBLIC_LINKS.map(({ to, label, icon: Icon, end }) => (
           <NavLink key={to} to={to} end={end} className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
@@ -125,17 +154,8 @@ export default function Navbar({ session }) {
       </nav>
 
       <div className="sidebar-bottom">
-        <NavLink to="/tentang" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
-          <Info size={21} />
-          <span>Tentang Saya</span>
-        </NavLink>
-
         {session ? (
           <>
-            <div className="sidebar-admin-greeting">
-              <CircleUserRound size={21} />
-              <span>Selamat datang, {username}</span>
-            </div>
             <NavLink to="/admin" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
               <LayoutDashboard size={21} />
               <span>Dashboard Admin</span>
@@ -227,6 +247,17 @@ export default function Navbar({ session }) {
             {logoMessage ? <span className="upload-message">{logoMessage}</span> : null}
           </div>
         </div>
+      ) : null}
+
+      {pendingLogo ? (
+        <ImageCropModal
+          file={pendingLogo}
+          aspectRatio={1}
+          title="Atur Logo Sekolah"
+          outputName="logo-wanasari.jpg"
+          onCancel={() => setPendingLogo(null)}
+          onConfirm={handleCroppedLogo}
+        />
       ) : null}
     </>
   );

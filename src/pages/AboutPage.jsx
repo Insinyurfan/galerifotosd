@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import Navbar from "../components/Navbar.jsx";
+import ImageCropModal from "../components/ImageCropModal.jsx";
 import { useSiteSettings } from "../hooks/useSiteSettings.js";
 import { useSession } from "../hooks/useSession.js";
 
@@ -22,6 +23,7 @@ export default function AboutPage() {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [photoUploading, setPhotoUploading] = useState(false);
+  const [pendingPhoto, setPendingPhoto] = useState(null);
   const [message, setMessage] = useState("");
   const [form, setForm] = useState(settings);
 
@@ -45,11 +47,25 @@ export default function AboutPage() {
     event.target.value = "";
     if (!file) return;
 
+    if (!file.type.startsWith("image/")) {
+      setMessage("File harus berupa gambar.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setMessage("Ukuran gambar maksimal 5 MB.");
+      return;
+    }
+
+    setPendingPhoto(file);
+  }
+
+  async function handleCroppedPhoto(file) {
     setPhotoUploading(true);
     setMessage("");
     try {
       await uploadImage(file, "developer-profile", "developer_photo_url");
       setMessage("Foto profil berhasil diperbarui.");
+      setPendingPhoto(null);
     } catch (error) {
       setMessage(error.message || "Gagal mengunggah foto.");
     } finally {
@@ -63,6 +79,9 @@ export default function AboutPage() {
     setMessage("");
     try {
       await saveSettings({
+        about_badge: form.about_badge.trim(),
+        about_title: form.about_title.trim(),
+        about_description: form.about_description.trim(),
         developer_name: form.developer_name.trim(),
         developer_role: form.developer_role.trim(),
         developer_intro: form.developer_intro.trim(),
@@ -98,9 +117,9 @@ export default function AboutPage() {
         ) : null}
 
         <section className="page-heading">
-          <span className="eyebrow">Tentang Developer</span>
-          <h1>Orang di balik website ini</h1>
-          <p>Sebuah perkenalan singkat dari pengembang ruang kenangan digital SDN Wanasari 15.</p>
+          <span className="eyebrow">{settings.about_badge}</span>
+          <h1>{settings.about_title}</h1>
+          <p>{settings.about_description}</p>
         </section>
 
         {editing ? (
@@ -117,6 +136,24 @@ export default function AboutPage() {
               </label>
             </div>
             <div className="inline-editor-grid">
+              <label>
+                <span>Badge Halaman</span>
+                <input name="about_badge" value={form.about_badge} onChange={handleChange} required />
+              </label>
+              <label className="full">
+                <span>Judul Halaman</span>
+                <input name="about_title" value={form.about_title} onChange={handleChange} required />
+              </label>
+              <label className="full">
+                <span>Deskripsi Halaman</span>
+                <textarea
+                  name="about_description"
+                  value={form.about_description}
+                  onChange={handleChange}
+                  rows="3"
+                  required
+                />
+              </label>
               <label>
                 <span>Nama</span>
                 <input name="developer_name" value={form.developer_name} onChange={handleChange} required />
@@ -222,6 +259,16 @@ export default function AboutPage() {
           </div>
         </section>
       </main>
+      {pendingPhoto ? (
+        <ImageCropModal
+          file={pendingPhoto}
+          aspectRatio={4 / 5}
+          title="Atur Foto Profil"
+          outputName="foto-profil.jpg"
+          onCancel={() => setPendingPhoto(null)}
+          onConfirm={handleCroppedPhoto}
+        />
+      ) : null}
     </div>
   );
 }

@@ -176,6 +176,21 @@ create table if not exists public.site_settings (
   dashboard_badge text not null,
   dashboard_title text not null,
   dashboard_description text not null,
+  photo_badge text not null default 'Galeri Foto',
+  photo_title text not null default 'Kenangan dalam setiap bingkai',
+  photo_description text not null default 'Temukan dokumentasi perpisahan kelas 6 dari berbagai sudut pengambilan.',
+  video_badge text not null default 'Galeri Video',
+  video_title text not null default 'Putar kembali momen terbaik',
+  video_description text not null default 'Saksikan kembali suasana perpisahan kelas 6 SDN Wanasari 15 dalam bentuk video.',
+  youtube_badge text not null default 'Video YouTube',
+  youtube_title text not null default 'Galeri YouTube',
+  youtube_description text not null default 'Kumpulan highlight acara kelulusan dan tasyakuran kelas 6 SDN Wanasari 15 pada 02 Juni 2026.',
+  tiktok_badge text not null default 'Galeri TikTok',
+  tiktok_title text not null default 'Video singkat, kenangan yang melekat',
+  tiktok_description text not null default 'Kumpulan video TikTok perpisahan kelas 6 yang ditambahkan langsung melalui dashboard admin.',
+  about_badge text not null default 'Tentang Developer',
+  about_title text not null default 'Orang di balik website ini',
+  about_description text not null default 'Sebuah perkenalan singkat dari pengembang ruang kenangan digital SDN Wanasari 15.',
   school_name text not null,
   school_instagram_url text not null default '',
   school_tiktok_url text not null default '',
@@ -188,6 +203,23 @@ create table if not exists public.site_settings (
   developer_tiktok_url text not null default '',
   developer_facebook_url text not null default ''
 );
+
+alter table public.site_settings
+  add column if not exists photo_badge text not null default 'Galeri Foto',
+  add column if not exists photo_title text not null default 'Kenangan dalam setiap bingkai',
+  add column if not exists photo_description text not null default 'Temukan dokumentasi perpisahan kelas 6 dari berbagai sudut pengambilan.',
+  add column if not exists video_badge text not null default 'Galeri Video',
+  add column if not exists video_title text not null default 'Putar kembali momen terbaik',
+  add column if not exists video_description text not null default 'Saksikan kembali suasana perpisahan kelas 6 SDN Wanasari 15 dalam bentuk video.',
+  add column if not exists youtube_badge text not null default 'Video YouTube',
+  add column if not exists youtube_title text not null default 'Galeri YouTube',
+  add column if not exists youtube_description text not null default 'Kumpulan highlight acara kelulusan dan tasyakuran kelas 6 SDN Wanasari 15 pada 02 Juni 2026.',
+  add column if not exists tiktok_badge text not null default 'Galeri TikTok',
+  add column if not exists tiktok_title text not null default 'Video singkat, kenangan yang melekat',
+  add column if not exists tiktok_description text not null default 'Kumpulan video TikTok perpisahan kelas 6 yang ditambahkan langsung melalui dashboard admin.',
+  add column if not exists about_badge text not null default 'Tentang Developer',
+  add column if not exists about_title text not null default 'Orang di balik website ini',
+  add column if not exists about_description text not null default 'Sebuah perkenalan singkat dari pengembang ruang kenangan digital SDN Wanasari 15.';
 
 insert into public.site_settings (
   id, site_title, dashboard_badge, dashboard_title, dashboard_description, school_name,
