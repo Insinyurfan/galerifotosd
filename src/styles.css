@@ -1091,7 +1091,8 @@ textarea {
 }
 
 .admin-tiktok-list article {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 14px;
   border: 1px solid #edf0f5;
@@ -1101,9 +1102,11 @@ textarea {
 
 .admin-tiktok-copy {
   min-width: 0;
+  overflow: hidden;
 }
 
 .admin-tiktok-copy h3 {
+  overflow-wrap: anywhere;
   margin: 0;
   color: #0f172a;
   font-size: 15px;
@@ -1111,12 +1114,12 @@ textarea {
 }
 
 .admin-tiktok-copy p {
-  overflow: hidden;
   margin: 4px 0;
   color: #64748b;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
   font-size: 12px;
+  line-height: 1.6;
 }
 
 .admin-tiktok-copy a {
@@ -1721,6 +1724,7 @@ textarea {
   }
 
   .admin-tiktok-list article {
+    display: flex;
     align-items: flex-start;
     flex-wrap: wrap;
   }

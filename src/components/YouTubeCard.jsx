@@ -31,7 +31,7 @@ export default function YouTubeCard({ video }) {
       <div className="space-y-3 p-4">
         <h3 className="line-clamp-2 text-base font-bold text-slate-950">{video.title}</h3>
         {video.description ? (
-          <p className="line-clamp-2 text-sm leading-6 text-slate-600">{video.description}</p>
+          <p className="whitespace-pre-wrap break-words text-sm leading-6 text-slate-600">{video.description}</p>
         ) : (
           <p className="text-sm leading-6 text-slate-400">Tidak ada deskripsi.</p>
         )}

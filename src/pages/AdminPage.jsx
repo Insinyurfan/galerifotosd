@@ -4,6 +4,7 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
+  Clapperboard,
   Edit3,
   ExternalLink,
   FolderInput,
@@ -16,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import Navbar from "../components/Navbar.jsx";
+import AdminTikTokManager from "../components/AdminTikTokManager.jsx";
 import { EMPTY_FORM, FOLDER_CATEGORIES } from "../constants/media.js";
 import { getDriveFileId } from "../lib/drive.js";
 import { importGoogleDriveFolder } from "../lib/googleDriveImport.js";
@@ -522,7 +524,7 @@ export default function AdminPage() {
           </button>
         </section>
 
-        <div className="mb-6 inline-flex rounded-lg border border-blue-100 bg-blue-50 p-1">
+        <div className="mb-6 flex w-fit flex-wrap rounded-lg border border-blue-100 bg-blue-50 p-1">
           <button
             type="button"
             onClick={() => setActiveAdminTab("gdrive")}
@@ -541,6 +543,16 @@ export default function AdminPage() {
           >
             <PlayCircle size={17} />
             YouTube
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveAdminTab("tiktok")}
+            className={`inline-flex h-10 items-center gap-2 rounded-md px-4 text-sm font-bold transition ${
+              activeAdminTab === "tiktok" ? "bg-white text-sapphire-700 shadow-sm" : "text-slate-600 hover:text-sapphire-700"
+            }`}
+          >
+            <Clapperboard size={17} />
+            TikTok
           </button>
         </div>
 
@@ -959,7 +971,7 @@ export default function AdminPage() {
           </div>
         </section>
           </>
-        ) : (
+        ) : activeAdminTab === "youtube" ? (
           <>
             <section className="mb-8 rounded-lg border border-blue-100 bg-white p-5 shadow-soft">
               <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
@@ -1158,6 +1170,8 @@ export default function AdminPage() {
               </div>
             </section>
           </>
+        ) : (
+          <AdminTikTokManager />
         )}
       </main>
     </div>

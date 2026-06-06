@@ -1,7 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import AdminAccountsPage from "./pages/AdminAccountsPage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
-import AdminTikTokPage from "./pages/AdminTikTokPage.jsx";
 import AboutPage from "./pages/AboutPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import GalleryPage from "./pages/GalleryPage.jsx";
@@ -32,14 +31,6 @@ export default function App() {
           }
         />
         <Route
-          path="/admin/tiktok"
-          element={
-            <ProtectedRoute>
-              <AdminTikTokPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/admin/accounts"
           element={
             <ProtectedRoute>
@@ -47,6 +38,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/admin/tiktok" element={<Navigate to="/admin" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <SiteTutorial />

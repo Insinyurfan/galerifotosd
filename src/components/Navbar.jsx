@@ -156,13 +156,9 @@ export default function Navbar({ session }) {
         </NavLink>
         {session ? (
           <>
-            <NavLink to="/admin" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
+            <NavLink to="/admin" end className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
               <LayoutDashboard size={21} />
               <span>Dashboard Admin</span>
-            </NavLink>
-            <NavLink to="/admin/tiktok" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
-              <Clapperboard size={21} />
-              <span>Kelola TikTok</span>
             </NavLink>
             <NavLink to="/admin/accounts" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
               <Settings size={21} />

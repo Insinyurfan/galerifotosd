@@ -60,7 +60,7 @@ export default function TikTokPage() {
           <div className="empty-state">
             <Clapperboard size={34} />
             <h2>Belum ada video TikTok</h2>
-            <p>Admin dapat menambahkan tautan video melalui menu Kelola TikTok.</p>
+            <p>Admin dapat menambahkan tautan video melalui tab TikTok di Dashboard Admin.</p>
           </div>
         )}
       </main>
