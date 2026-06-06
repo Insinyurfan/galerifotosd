@@ -230,7 +230,7 @@ insert into public.site_settings (
 )
 values (
   1,
-  'Perpisahan Kelas 6 2026 SDN WANASARI 15',
+  'WEBSITE RESMI DOKUMENTASI PERPISAHAN KELAS 6 SDN WANASARI 15 TAHUN 2026',
   'Album Kenangan 2026',
   'Selamat datang di ruang kenangan perpisahan kelas 6.',
   'Setiap foto dan video di sini menyimpan cerita tentang kebersamaan, tawa, dan langkah baru keluarga besar SDN Wanasari 15. Mari melihat kembali momen indah yang akan selalu menjadi bagian dari perjalanan kita.',
@@ -247,6 +247,13 @@ values (
   'https://www.facebook.com/'
 )
 on conflict (id) do nothing;
+
+update public.site_settings
+set
+  site_title = 'WEBSITE RESMI DOKUMENTASI PERPISAHAN KELAS 6 SDN WANASARI 15 TAHUN 2026',
+  updated_at = now()
+where id = 1
+  and site_title = 'Perpisahan Kelas 6 2026 SDN WANASARI 15';
 
 alter table public.site_settings enable row level security;
 
