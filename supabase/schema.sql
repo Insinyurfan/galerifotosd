@@ -192,6 +192,7 @@ create table if not exists public.site_settings (
   about_title text not null default 'Orang di balik website ini',
   about_description text not null default 'Sebuah perkenalan singkat dari pengembang ruang kenangan digital SDN Wanasari 15.',
   school_name text not null,
+  school_website_url text not null default 'https://sdnwanasari15.blogspot.com/p/dewan-guru-sdn-wanasari-15.html',
   school_instagram_url text not null default '',
   school_tiktok_url text not null default '',
   developer_name text not null,
@@ -205,6 +206,7 @@ create table if not exists public.site_settings (
 );
 
 alter table public.site_settings
+  add column if not exists school_website_url text not null default 'https://sdnwanasari15.blogspot.com/p/dewan-guru-sdn-wanasari-15.html',
   add column if not exists photo_badge text not null default 'Galeri Foto',
   add column if not exists photo_title text not null default 'Kenangan dalam setiap bingkai',
   add column if not exists photo_description text not null default 'Temukan dokumentasi perpisahan kelas 6 dari berbagai sudut pengambilan.',
@@ -222,7 +224,7 @@ alter table public.site_settings
   add column if not exists about_description text not null default 'Sebuah perkenalan singkat dari pengembang ruang kenangan digital SDN Wanasari 15.';
 
 insert into public.site_settings (
-  id, site_title, dashboard_badge, dashboard_title, dashboard_description, school_name,
+  id, site_title, dashboard_badge, dashboard_title, dashboard_description, school_name, school_website_url,
   school_instagram_url, school_tiktok_url, developer_name, developer_role, developer_intro,
   developer_university, developer_instagram_url, developer_tiktok_url, developer_facebook_url
 )
@@ -233,6 +235,7 @@ values (
   'Selamat datang di ruang kenangan perpisahan kelas 6.',
   'Setiap foto dan video di sini menyimpan cerita tentang kebersamaan, tawa, dan langkah baru keluarga besar SDN Wanasari 15. Mari melihat kembali momen indah yang akan selalu menjadi bagian dari perjalanan kita.',
   'SDN Wanasari 15',
+  'https://sdnwanasari15.blogspot.com/p/dewan-guru-sdn-wanasari-15.html',
   'https://www.instagram.com/sdnwanasari15/',
   'https://www.tiktok.com/@sdnwanasari15',
   'Irfan',

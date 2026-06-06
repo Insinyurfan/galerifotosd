@@ -559,7 +559,7 @@ textarea {
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1.25fr 0.75fr 0.75fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
   margin-top: 24px;
 }
@@ -587,6 +587,7 @@ textarea {
 .card-icon.blue { background: #e8f1ff; color: #1e40af; }
 .card-icon.pink { background: #fce7f3; color: #be185d; }
 .card-icon.dark { background: #172033; color: white; }
+.card-icon.website { background: #ecfdf5; color: #047857; }
 
 .card-kicker {
   margin: 0 0 8px;

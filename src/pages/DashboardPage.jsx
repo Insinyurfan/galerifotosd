@@ -1,5 +1,16 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, Camera, Clapperboard, Instagram, Pencil, PlayCircle, Save, Sparkles, X } from "lucide-react";
+import {
+  ArrowRight,
+  Camera,
+  Clapperboard,
+  Globe2,
+  Instagram,
+  Pencil,
+  PlayCircle,
+  Save,
+  Sparkles,
+  X,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar.jsx";
 import { useSiteSettings } from "../hooks/useSiteSettings.js";
@@ -33,6 +44,7 @@ export default function DashboardPage() {
         dashboard_title: form.dashboard_title.trim(),
         dashboard_description: form.dashboard_description.trim(),
         school_name: form.school_name.trim(),
+        school_website_url: form.school_website_url.trim(),
         school_instagram_url: form.school_instagram_url.trim(),
         school_tiktok_url: form.school_tiktok_url.trim(),
       });
@@ -98,6 +110,10 @@ export default function DashboardPage() {
                 />
               </label>
               <label>
+                <span>Link Website Sekolah</span>
+                <input name="school_website_url" type="url" value={form.school_website_url} onChange={handleChange} />
+              </label>
+              <label>
                 <span>Link Instagram Sekolah</span>
                 <input
                   name="school_instagram_url"
@@ -160,6 +176,20 @@ export default function DashboardPage() {
               <p className="card-kicker">Dokumentasi Lengkap</p>
               <h2>Satu tempat untuk seluruh momen istimewa</h2>
               <p>Jelajahi hasil dokumentasi dari Kamera, iPhone, dan Drone dengan tampilan yang rapi dan mudah digunakan.</p>
+            </div>
+          </article>
+
+          <article className="dashboard-card">
+            <span className="card-icon website">
+              <Globe2 size={24} />
+            </span>
+            <div>
+              <p className="card-kicker">Website Sekolah</p>
+              <h2>{settings.school_name}</h2>
+              <p>Kunjungi website resmi sekolah untuk melihat profil dan informasi SDN Wanasari 15.</p>
+              <a href={settings.school_website_url || "#"} target="_blank" rel="noreferrer">
+                Buka Website <ArrowRight size={16} />
+              </a>
             </div>
           </article>
 
