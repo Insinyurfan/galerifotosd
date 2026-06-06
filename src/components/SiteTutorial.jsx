@@ -1,7 +1,32 @@
 import { useEffect, useMemo, useState } from "react";
-import { Download, Images, KeyRound, PlayCircle, Search, X } from "lucide-react";
+import {
+  Clapperboard,
+  Download,
+  Home,
+  Image,
+  KeyRound,
+  PlayCircle,
+  Search,
+  UserRound,
+  Video,
+  X,
+  Youtube,
+} from "lucide-react";
 
-const TUTORIAL_STORAGE_KEY = "sdn_wanasari_site_tutorial_seen_v1";
+const TUTORIAL_STORAGE_KEY = "sdn_wanasari_site_tutorial_date_v2";
+
+function getLocalDateKey(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function getMillisecondsUntilMidnight() {
+  const now = new Date();
+  const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  return nextMidnight.getTime() - now.getTime() + 250;
+}
 
 export default function SiteTutorial() {
   const [visible, setVisible] = useState(false);
@@ -10,48 +35,102 @@ export default function SiteTutorial() {
   const steps = useMemo(
     () => [
       {
-        icon: Images,
-        title: "Galeri Foto dan Video",
-        text: "Halaman utama berisi dokumentasi dari Google Drive. Pilih kategori Kamera, iPhone, atau Drone untuk melihat media sesuai sumbernya.",
+        icon: Home,
+        title: "Dashboard Utama",
+        text: "Website dibuka dari Dashboard yang berisi sambutan, akses cepat menuju galeri, serta tautan Instagram dan TikTok SDN Wanasari 15.",
+      },
+      {
+        icon: Image,
+        title: "Galeri Foto",
+        text: "Buka menu Foto untuk melihat dokumentasi berdasarkan sumber Kamera, iPhone, atau Drone. Klik foto untuk memperbesar dan melihatnya dengan jelas.",
+      },
+      {
+        icon: Video,
+        title: "Galeri Video",
+        text: "Menu Video berisi dokumentasi bergerak dari Kamera, iPhone, dan Drone dengan filter yang terpisah dari galeri foto.",
       },
       {
         icon: Search,
         title: "Cari dan Filter Media",
-        text: "Gunakan kolom pencarian, tombol Foto, dan tombol Video untuk menemukan momen tertentu dengan lebih cepat.",
+        text: "Gunakan kolom pencarian dan pilihan kategori untuk menemukan foto atau video tertentu dengan lebih cepat.",
       },
       {
         icon: Download,
         title: "Buka atau Unduh File",
-        text: "Setiap media dapat dibuka langsung dari Drive. File foto dan video juga dapat diunduh melalui tombol yang tersedia.",
+        text: "Media dari Google Drive dapat dibuka pada ukuran penuh dan diunduh melalui tombol yang tersedia pada setiap kartu.",
       },
       {
-        icon: PlayCircle,
-        title: "Galeri YouTube",
-        text: "Menu YouTube menampilkan highlight acara dalam halaman terpisah, sehingga tidak bercampur dengan galeri Google Drive.",
+        icon: Youtube,
+        title: "Halaman YouTube",
+        text: "Menu YouTube menampilkan video highlight khusus YouTube tanpa filter Kamera, iPhone, atau Drone.",
+      },
+      {
+        icon: Clapperboard,
+        title: "Halaman TikTok",
+        text: "Menu TikTok menampilkan video singkat yang telah ditambahkan oleh admin dan dapat dibuka langsung menuju TikTok.",
+      },
+      {
+        icon: UserRound,
+        title: "Tentang Saya",
+        text: "Halaman Tentang Saya berisi profil developer website, perkenalan singkat, informasi pendidikan, dan tautan sosial media.",
       },
       {
         icon: KeyRound,
         title: "Akses Admin",
-        text: "Admin dapat login untuk menambah, mengedit, menghapus media, mengelola video YouTube, dan mengatur akun admin.",
+        text: "Setelah login, admin dapat mengelola foto, video, YouTube, TikTok, akun admin, serta mengedit teks dan gambar pada halaman publik.",
+      },
+      {
+        icon: PlayCircle,
+        title: "Panduan Harian",
+        text: "Panduan ini tampil satu kali setiap hari. Jika dilewati atau diselesaikan, panduan akan muncul kembali setelah pukul 00.00 pada hari berikutnya.",
       },
     ],
     []
   );
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const hasSeenTutorial = window.localStorage.getItem(TUTORIAL_STORAGE_KEY) === "true";
-    setVisible(!hasSeenTutorial);
+    if (typeof window === "undefined") return undefined;
+
+    let midnightTimer;
+
+    function showTutorialWhenNewDay() {
+      const lastSeenDate = window.localStorage.getItem(TUTORIAL_STORAGE_KEY);
+      if (lastSeenDate !== getLocalDateKey()) {
+        setActiveStep(0);
+        setVisible(true);
+      }
+    }
+
+    function scheduleMidnightReset() {
+      window.clearTimeout(midnightTimer);
+      midnightTimer = window.setTimeout(() => {
+        showTutorialWhenNewDay();
+        scheduleMidnightReset();
+      }, getMillisecondsUntilMidnight());
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === "visible") showTutorialWhenNewDay();
+    }
+
+    showTutorialWhenNewDay();
+    scheduleMidnightReset();
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.clearTimeout(midnightTimer);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
-  function closeTutorial() {
-    window.localStorage.setItem(TUTORIAL_STORAGE_KEY, "true");
+  function closeTutorialForToday() {
+    window.localStorage.setItem(TUTORIAL_STORAGE_KEY, getLocalDateKey());
     setVisible(false);
   }
 
   function showNextStep() {
     if (activeStep >= steps.length - 1) {
-      closeTutorial();
+      closeTutorialForToday();
       return;
     }
 
@@ -73,19 +152,17 @@ export default function SiteTutorial() {
       >
         <div className="flex items-start justify-between gap-4 border-b border-blue-100 px-5 py-4">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-sapphire-700">
-              Panduan Singkat
-            </p>
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-sapphire-700">Panduan Harian</p>
             <h2 id="site-tutorial-title" className="mt-1 text-xl font-black text-slate-950">
               Kenali Fitur Website
             </h2>
           </div>
           <button
             type="button"
-            onClick={closeTutorial}
+            onClick={closeTutorialForToday}
             className="grid h-9 w-9 shrink-0 place-items-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
-            aria-label="Tutup tutorial"
-            title="Tutup"
+            aria-label="Tutup tutorial untuk hari ini"
+            title="Tutup untuk hari ini"
           >
             <X size={19} />
           </button>
@@ -114,10 +191,10 @@ export default function SiteTutorial() {
         <div className="flex flex-col-reverse gap-3 border-t border-blue-100 bg-slate-50 px-5 py-4 sm:flex-row sm:justify-between">
           <button
             type="button"
-            onClick={closeTutorial}
+            onClick={closeTutorialForToday}
             className="inline-flex h-11 items-center justify-center rounded-md border border-blue-100 bg-white px-4 text-sm font-bold text-slate-700 transition hover:bg-blue-50 hover:text-sapphire-700"
           >
-            Lewati
+            Lewati Hari Ini
           </button>
           <div className="flex gap-3">
             <button
@@ -133,7 +210,7 @@ export default function SiteTutorial() {
               onClick={showNextStep}
               className="inline-flex h-11 items-center justify-center rounded-md bg-sapphire-700 px-5 text-sm font-bold text-white transition hover:bg-sapphire-800"
             >
-              {activeStep === steps.length - 1 ? "Selesai" : "Lanjut"}
+              {activeStep === steps.length - 1 ? "Selesai Hari Ini" : "Lanjut"}
             </button>
           </div>
         </div>
