@@ -1265,6 +1265,10 @@ textarea {
   padding: 16px;
 }
 
+.ios-player-notice {
+  display: none;
+}
+
 .crop-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1628,6 +1632,18 @@ textarea {
 
   .video-lightbox .video-lightbox-details p {
     display: none;
+  }
+
+  .video-lightbox .video-lightbox-details .ios-player-notice {
+    display: block;
+    margin: 0 0 9px;
+    border-radius: 9px;
+    background: #eff6ff;
+    padding: 8px 10px;
+    color: #1e40af;
+    font-size: 11px;
+    font-weight: 750;
+    line-height: 1.45;
   }
 
   .video-lightbox > button {

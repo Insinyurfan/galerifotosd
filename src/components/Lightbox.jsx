@@ -2,8 +2,18 @@ import { useEffect, useState } from "react";
 import { Download, ExternalLink, X } from "lucide-react";
 import { getDownloadUrl, getDriveViewUrl, getImageCandidates, getVideoEmbedUrl } from "../lib/drive.js";
 
+function isIOSDevice() {
+  if (typeof navigator === "undefined") return false;
+
+  return (
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+  );
+}
+
 export default function Lightbox({ media, onClose }) {
   const isVideo = media?.type === "video";
+  const usesIOSPlayer = isVideo && isIOSDevice();
   const imageCandidates = getImageCandidates(media?.drive_url || "");
   const videoEmbedUrl = getVideoEmbedUrl(media?.drive_url || "");
   const [imageIndex, setImageIndex] = useState(0);
@@ -42,7 +52,10 @@ export default function Lightbox({ media, onClose }) {
       aria-modal="true"
       onClick={onClose}
     >
-      <div className={`media-lightbox ${isVideo ? "video-lightbox" : ""}`} onClick={(event) => event.stopPropagation()}>
+      <div
+        className={`media-lightbox ${isVideo ? "video-lightbox" : ""} ${usesIOSPlayer ? "ios-video-lightbox" : ""}`}
+        onClick={(event) => event.stopPropagation()}
+      >
         <button
           type="button"
           onClick={onClose}
@@ -59,8 +72,12 @@ export default function Lightbox({ media, onClose }) {
                 title={media.title}
                 src={videoEmbedUrl}
                 className="media-lightbox-frame"
-                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-                allowFullScreen
+                allow={
+                  usesIOSPlayer
+                    ? "autoplay; encrypted-media; picture-in-picture"
+                    : "autoplay; encrypted-media; picture-in-picture; fullscreen"
+                }
+                allowFullScreen={!usesIOSPlayer}
                 loading="eager"
               />
             ) : (
@@ -83,6 +100,11 @@ export default function Lightbox({ media, onClose }) {
           />
         )}
         <div className={`media-lightbox-details ${isVideo ? "video-lightbox-details" : ""}`}>
+          {usesIOSPlayer ? (
+            <p className="ios-player-notice">
+              Video sudah dibuka dalam mode layar penuh website. Gunakan tombol putar tanpa menekan fullscreen player iPhone.
+            </p>
+          ) : null}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <h2 className="text-lg font-bold text-slate-950">{media.title}</h2>
