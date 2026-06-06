@@ -1593,11 +1593,10 @@ textarea {
   }
 
   .media-lightbox.video-lightbox {
-    display: grid;
+    display: block;
     width: 100vw;
     height: 100dvh;
     max-height: none;
-    grid-template-rows: minmax(0, 1fr) auto;
     background: #000;
   }
 
@@ -1616,34 +1615,7 @@ textarea {
   }
 
   .video-lightbox .video-lightbox-details {
-    z-index: 2;
-    max-height: 32dvh;
-    overflow-y: auto;
-    margin-top: 0;
-    border-radius: 0;
-    padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
-  }
-
-  .video-lightbox .video-lightbox-details h2 {
-    padding-right: 48px;
-    font-size: 15px;
-    line-height: 1.35;
-  }
-
-  .video-lightbox .video-lightbox-details p {
     display: none;
-  }
-
-  .video-lightbox .video-lightbox-details .ios-player-notice {
-    display: block;
-    margin: 0 0 9px;
-    border-radius: 9px;
-    background: #eff6ff;
-    padding: 8px 10px;
-    color: #1e40af;
-    font-size: 11px;
-    font-weight: 750;
-    line-height: 1.45;
   }
 
   .video-lightbox > button {
@@ -1656,13 +1628,6 @@ textarea {
     background: rgba(255, 255, 255, 0.94);
   }
 
-  .video-lightbox .video-lightbox-details > div {
-    gap: 10px;
-  }
-
-  .video-lightbox .video-lightbox-details a {
-    height: 42px;
-  }
 }
 
 @media (max-width: 560px) {
