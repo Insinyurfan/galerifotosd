@@ -24,11 +24,22 @@ export default function MediaCard({ media, onOpen }) {
     setImageFailed(true);
   }
 
+  function handleOpenMedia() {
+    const isMobileDevice = window.matchMedia("(max-width: 820px), (pointer: coarse)").matches;
+
+    if (!isImage && isMobileDevice) {
+      window.location.assign(driveViewUrl);
+      return;
+    }
+
+    onOpen(media);
+  }
+
   return (
     <article className="overflow-hidden rounded-lg border border-blue-100 bg-white shadow-soft">
       <div className="relative aspect-[4/3] bg-slate-100">
         {isImage ? (
-          <button type="button" className="h-full w-full" onClick={() => onOpen(media)}>
+          <button type="button" className="h-full w-full" onClick={handleOpenMedia}>
             {imageFailed ? (
               <div className="grid h-full w-full place-items-center bg-slate-100 px-5 text-center">
                 <div>
@@ -48,7 +59,7 @@ export default function MediaCard({ media, onOpen }) {
             )}
           </button>
         ) : (
-          <button type="button" className="group h-full w-full" onClick={() => onOpen(media)}>
+          <button type="button" className="group h-full w-full" onClick={handleOpenMedia}>
             {imageFailed ? (
               <div className="grid h-full w-full place-items-center bg-slate-100 px-5 text-center">
                 <div>
@@ -82,7 +93,7 @@ export default function MediaCard({ media, onOpen }) {
         {!isImage ? (
           <button
             type="button"
-            onClick={() => onOpen(media)}
+            onClick={handleOpenMedia}
             className="absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-md bg-white/95 text-sapphire-800 shadow-sm transition hover:bg-blue-50"
             aria-label="Perbesar video"
             title="Perbesar video"
