@@ -25,13 +25,6 @@ export default function MediaCard({ media, onOpen }) {
   }
 
   function handleOpenMedia() {
-    const isMobileDevice = window.matchMedia("(max-width: 820px), (pointer: coarse)").matches;
-
-    if (!isImage && isMobileDevice) {
-      window.location.assign(driveViewUrl);
-      return;
-    }
-
     onOpen(media);
   }
 

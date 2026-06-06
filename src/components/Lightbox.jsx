@@ -14,6 +14,16 @@ export default function Lightbox({ media, onClose }) {
     setImageFailed(false);
   }, [media?.drive_url]);
 
+  useEffect(() => {
+    if (!media) return undefined;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [media]);
+
   if (!media) return null;
 
   function handleImageError() {
@@ -72,7 +82,7 @@ export default function Lightbox({ media, onClose }) {
             onError={handleImageError}
           />
         )}
-        <div className="media-lightbox-details">
+        <div className={`media-lightbox-details ${isVideo ? "video-lightbox-details" : ""}`}>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <h2 className="text-lg font-bold text-slate-950">{media.title}</h2>
