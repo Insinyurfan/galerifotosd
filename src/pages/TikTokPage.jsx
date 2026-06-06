@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Clapperboard, ExternalLink, Search } from "lucide-react";
+import { Clapperboard, Search } from "lucide-react";
 import Navbar from "../components/Navbar.jsx";
 import EditablePageHeading from "../components/EditablePageHeading.jsx";
+import TikTokCard from "../components/TikTokCard.jsx";
 import { useSession } from "../hooks/useSession.js";
 import { supabase } from "../lib/supabase.js";
 
@@ -52,19 +53,7 @@ export default function TikTokPage() {
         ) : visibleItems.length ? (
           <section className="tiktok-grid">
             {visibleItems.map((item) => (
-              <article key={item.id} className="tiktok-card">
-                <div className="tiktok-card-visual">
-                  <Clapperboard size={46} />
-                  <span>TikTok</span>
-                </div>
-                <div className="tiktok-card-content">
-                  <h2>{item.title}</h2>
-                  <p>{item.description || "Tonton video selengkapnya langsung di TikTok."}</p>
-                  <a href={item.tiktok_url} target="_blank" rel="noreferrer">
-                    Buka TikTok <ExternalLink size={17} />
-                  </a>
-                </div>
-              </article>
+              <TikTokCard key={item.id} item={item} />
             ))}
           </section>
         ) : (

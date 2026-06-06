@@ -805,10 +805,29 @@ textarea {
 }
 
 .tiktok-card-visual span {
+  max-width: 250px;
   font-size: 13px;
   font-weight: 900;
   letter-spacing: 0.12em;
+  line-height: 1.6;
+  text-align: center;
   text-transform: uppercase;
+}
+
+.tiktok-embed-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  background: #0b0d12;
+}
+
+.tiktok-embed-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .tiktok-card-content {
@@ -1012,6 +1031,12 @@ textarea {
   font-weight: 800;
 }
 
+.form-help {
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
 .admin-tiktok-form input,
 .admin-tiktok-form textarea {
   width: 100%;
@@ -1182,6 +1207,58 @@ textarea {
   background: white;
   color: #0f172a;
   cursor: pointer;
+}
+
+.media-lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  background: rgba(2, 6, 23, 0.88);
+  padding: 16px;
+}
+
+.media-lightbox {
+  position: relative;
+  width: min(100%, 1152px);
+  max-height: calc(100dvh - 32px);
+}
+
+.media-lightbox.video-lightbox {
+  display: flex;
+  width: min(100%, 960px);
+  max-height: calc(100dvh - 32px);
+  flex-direction: column;
+}
+
+.media-lightbox-player {
+  position: relative;
+  width: 100%;
+  flex: 0 0 auto;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 12px;
+  background: black;
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.32);
+}
+
+.media-lightbox-frame {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.media-lightbox-details {
+  margin-top: 12px;
+  border-radius: 12px;
+  background: white;
+  padding: 16px;
 }
 
 .crop-modal-backdrop {
@@ -1495,6 +1572,27 @@ textarea {
 }
 
 @media (max-width: 560px) {
+  .media-lightbox-backdrop {
+    align-items: flex-start;
+    padding: 8px;
+  }
+
+  .media-lightbox,
+  .media-lightbox.video-lightbox {
+    width: 100%;
+    max-height: none;
+    margin: auto 0;
+  }
+
+  .media-lightbox-player {
+    border-radius: 10px;
+  }
+
+  .media-lightbox-details {
+    margin-top: 8px;
+    padding: 15px;
+  }
+
   .site-brand > a {
     max-width: calc(100vw - 125px);
     font-size: 10px;

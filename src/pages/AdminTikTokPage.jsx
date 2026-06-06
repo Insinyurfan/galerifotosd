@@ -3,6 +3,7 @@ import { Clapperboard, Edit3, ExternalLink, Plus, RefreshCw, Save, Search, Trash
 import Navbar from "../components/Navbar.jsx";
 import { useSession } from "../hooks/useSession.js";
 import { supabase } from "../lib/supabase.js";
+import { getTikTokVideoId } from "../lib/tiktok.js";
 
 const EMPTY_FORM = { title: "", description: "", tiktok_url: "" };
 
@@ -53,10 +54,19 @@ export default function AdminTikTokPage() {
     setMessage("");
     setErrorMessage("");
 
+    const normalizedUrl = form.tiktok_url.trim();
+    if (!getTikTokVideoId(normalizedUrl)) {
+      setErrorMessage(
+        "Gunakan link video TikTok lengkap, contohnya https://www.tiktok.com/@username/video/123456789 agar video dapat diputar di website."
+      );
+      setSaving(false);
+      return;
+    }
+
     const payload = {
       title: form.title.trim(),
       description: form.description.trim(),
-      tiktok_url: form.tiktok_url.trim(),
+      tiktok_url: normalizedUrl,
     };
 
     const result = editingId
@@ -127,6 +137,9 @@ export default function AdminTikTokPage() {
                 placeholder="https://www.tiktok.com/@username/video/..."
                 required
               />
+              <small className="form-help">
+                Gunakan link lengkap yang mengandung <strong>/video/ID</strong>. Link pendek tidak dapat dijadikan player.
+              </small>
             </label>
             <label className="full">
               <span>Deskripsi</span>

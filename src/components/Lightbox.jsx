@@ -27,12 +27,12 @@ export default function Lightbox({ media, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 p-4"
+      className="media-lightbox-backdrop"
       role="dialog"
       aria-modal="true"
       onClick={onClose}
     >
-      <div className="relative max-h-full w-full max-w-6xl" onClick={(event) => event.stopPropagation()}>
+      <div className={`media-lightbox ${isVideo ? "video-lightbox" : ""}`} onClick={(event) => event.stopPropagation()}>
         <button
           type="button"
           onClick={onClose}
@@ -43,18 +43,18 @@ export default function Lightbox({ media, onClose }) {
           <X size={20} />
         </button>
         {isVideo ? (
-          <div className="overflow-hidden rounded-lg bg-black shadow-soft">
+          <div className="media-lightbox-player">
             {videoEmbedUrl ? (
               <iframe
                 title={media.title}
                 src={videoEmbedUrl}
-                className="aspect-video max-h-[72vh] w-full"
+                className="media-lightbox-frame"
                 allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
                 allowFullScreen
                 loading="eager"
               />
             ) : (
-              <video src={media.drive_url} controls className="aspect-video max-h-[72vh] w-full bg-black object-contain" />
+              <video src={media.drive_url} controls className="media-lightbox-frame bg-black object-contain" />
             )}
           </div>
         ) : imageFailed ? (
@@ -72,7 +72,7 @@ export default function Lightbox({ media, onClose }) {
             onError={handleImageError}
           />
         )}
-        <div className="mt-3 rounded-lg bg-white p-4">
+        <div className="media-lightbox-details">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <h2 className="text-lg font-bold text-slate-950">{media.title}</h2>
