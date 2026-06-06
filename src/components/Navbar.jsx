@@ -1,149 +1,199 @@
-import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { Camera, Images, LayoutDashboard, LogIn, Menu, PlayCircle, UserCog, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  CircleUserRound,
+  Clapperboard,
+  Home,
+  Image,
+  Info,
+  LayoutDashboard,
+  LogIn,
+  LogOut,
+  Menu,
+  PlaySquare,
+  Settings,
+  ShieldCheck,
+  UserRound,
+  X,
+  Youtube,
+} from "lucide-react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { SCHOOL_LOGO, SITE_TITLE } from "../constants/site.js";
+import { supabase } from "../lib/supabase.js";
+
+const PUBLIC_LINKS = [
+  { to: "/", label: "Dashboard", icon: Home, end: true },
+  { to: "/foto", label: "Foto", icon: Image },
+  { to: "/video", label: "Video", icon: PlaySquare },
+  { to: "/youtube", label: "YouTube", icon: Youtube },
+  { to: "/tiktok", label: "TikTok", icon: Clapperboard },
+];
 
 export default function Navbar({ session }) {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [logoPreviewOpen, setLogoPreviewOpen] = useState(false);
+  const [logoFailed, setLogoFailed] = useState(false);
+  const [username, setUsername] = useState("");
 
-  const adminTarget = session ? "/admin" : "/login";
-  const adminLabel = session ? "Dashboard Admin" : "Login";
-  const AdminIcon = session ? LayoutDashboard : LogIn;
-
-  function closeMobileMenu() {
+  useEffect(() => {
     setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function fetchUsername() {
+      if (!session?.user?.id) {
+        setUsername("");
+        return;
+      }
+
+      const { data } = await supabase
+        .from("admin_profiles")
+        .select("username")
+        .eq("id", session.user.id)
+        .maybeSingle();
+
+      if (active) {
+        setUsername(data?.username || session.user.email?.split("@")[0] || "Admin");
+      }
+    }
+
+    fetchUsername();
+    return () => {
+      active = false;
+    };
+  }, [session]);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    setMobileMenuOpen(false);
+    navigate("/", { replace: true });
   }
 
-  return (
-    <header className="sticky top-0 z-30 border-b border-blue-100 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-        <Link to="/" className="flex min-w-0 items-center gap-3 text-sapphire-800" onClick={closeMobileMenu}>
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-sapphire-700 text-white shadow-soft">
-            <Camera size={21} strokeWidth={2.4} />
-          </span>
-          <span className="truncate text-base font-bold tracking-normal sm:text-lg">Galeri SDN Wanasari 15</span>
-        </Link>
+  function renderLogo(className) {
+    if (logoFailed) {
+      return <span className={`${className} grid place-items-center bg-blue-700 font-black text-white`}>W15</span>;
+    }
 
-        <nav className="hidden items-center gap-2 md:flex">
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              `rounded-md px-3 py-2 text-sm font-semibold transition ${
-                isActive ? "bg-blue-50 text-sapphire-700" : "text-slate-600 hover:bg-slate-100"
-              }`
-            }
-          >
-            <span className="inline-flex items-center gap-2">
-              <Images size={16} />
-              Galeri
-            </span>
+    return (
+      <img
+        src={SCHOOL_LOGO}
+        alt="Logo SDN Wanasari 15"
+        className={`${className} object-contain`}
+        onError={() => setLogoFailed(true)}
+      />
+    );
+  }
+
+  const sidebarContent = (
+    <>
+      <nav className="sidebar-nav" aria-label="Navigasi utama">
+        {PUBLIC_LINKS.map(({ to, label, icon: Icon, end }) => (
+          <NavLink key={to} to={to} end={end} className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
+            <Icon size={21} />
+            <span>{label}</span>
           </NavLink>
-          <NavLink
-            to="/youtube"
-            className={({ isActive }) =>
-              `rounded-md px-3 py-2 text-sm font-semibold transition ${
-                isActive ? "bg-blue-50 text-sapphire-700" : "text-slate-600 hover:bg-slate-100"
-              }`
-            }
-          >
-            <span className="inline-flex items-center gap-2">
-              <PlayCircle size={16} />
-              YouTube
-            </span>
-          </NavLink>
-          <NavLink
-            to={adminTarget}
-            className={({ isActive }) =>
-              `inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold transition ${
-                isActive ? "bg-sapphire-700 text-white" : "bg-slate-900 text-white hover:bg-sapphire-800"
-              }`
-            }
-          >
-            <AdminIcon size={16} />
-            {adminLabel}
-          </NavLink>
-          {session ? (
-            <NavLink
-              to="/admin/accounts"
-              className={({ isActive }) =>
-                `grid h-10 w-10 place-items-center rounded-md text-sm font-semibold transition ${
-                  isActive ? "bg-sapphire-700 text-white" : "border border-blue-100 bg-white text-sapphire-700 hover:bg-blue-50"
-                }`
-              }
-              aria-label="Pengaturan akun admin"
-              title="Pengaturan akun admin"
-            >
-              <UserCog size={18} />
+        ))}
+      </nav>
+
+      <div className="sidebar-bottom">
+        <NavLink to="/tentang" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
+          <Info size={21} />
+          <span>Tentang Saya</span>
+        </NavLink>
+
+        {session ? (
+          <>
+            <div className="sidebar-admin-greeting">
+              <CircleUserRound size={21} />
+              <span>Selamat datang, {username}</span>
+            </div>
+            <NavLink to="/admin" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
+              <LayoutDashboard size={21} />
+              <span>Dashboard Admin</span>
             </NavLink>
-          ) : null}
-        </nav>
+            <NavLink to="/admin/tiktok" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
+              <Clapperboard size={21} />
+              <span>Kelola TikTok</span>
+            </NavLink>
+            <NavLink to="/admin/accounts" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
+              <Settings size={21} />
+              <span>Pengaturan Akun</span>
+            </NavLink>
+            <button type="button" className="sidebar-link sidebar-logout" onClick={handleLogout}>
+              <LogOut size={21} />
+              <span>Logout</span>
+            </button>
+          </>
+        ) : (
+          <NavLink to="/login" className={({ isActive }) => `sidebar-link sidebar-login ${isActive ? "active" : ""}`}>
+            <LogIn size={21} />
+            <span>Login</span>
+          </NavLink>
+        )}
+      </div>
+    </>
+  );
 
+  return (
+    <>
+      <header className="site-header">
         <button
           type="button"
+          className="mobile-menu-button"
           onClick={() => setMobileMenuOpen((open) => !open)}
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-md border border-blue-100 bg-white text-sapphire-800 transition hover:bg-blue-50 md:hidden"
           aria-label={mobileMenuOpen ? "Tutup menu" : "Buka menu"}
-          aria-expanded={mobileMenuOpen}
         >
           {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
-      </div>
+
+        <div className="site-brand">
+          <button
+            type="button"
+            className="site-logo-button"
+            onClick={() => setLogoPreviewOpen(true)}
+            aria-label="Perbesar logo SDN Wanasari 15"
+          >
+            {renderLogo("site-logo")}
+          </button>
+          <Link to="/">{SITE_TITLE}</Link>
+        </div>
+
+        <div className="site-header-status">
+          {session ? <ShieldCheck size={18} /> : <UserRound size={18} />}
+          <span>{session ? username || "Admin" : "Galeri Publik"}</span>
+        </div>
+      </header>
+
+      <aside className="desktop-sidebar">{sidebarContent}</aside>
 
       {mobileMenuOpen ? (
-        <nav className="border-t border-blue-100 bg-white px-4 py-3 shadow-sm md:hidden">
-          <div className="mx-auto grid max-w-7xl gap-2">
-            <NavLink
-              to="/"
-              onClick={closeMobileMenu}
-              className={({ isActive }) =>
-                `inline-flex h-11 items-center gap-2 rounded-md px-3 text-sm font-semibold transition ${
-                  isActive ? "bg-blue-50 text-sapphire-700" : "text-slate-700 hover:bg-slate-100"
-                }`
-              }
-            >
-              <Images size={17} />
-              Galeri
-            </NavLink>
-            <NavLink
-              to="/youtube"
-              onClick={closeMobileMenu}
-              className={({ isActive }) =>
-                `inline-flex h-11 items-center gap-2 rounded-md px-3 text-sm font-semibold transition ${
-                  isActive ? "bg-blue-50 text-sapphire-700" : "text-slate-700 hover:bg-slate-100"
-                }`
-              }
-            >
-              <PlayCircle size={17} />
-              YouTube
-            </NavLink>
-            <NavLink
-              to={adminTarget}
-              onClick={closeMobileMenu}
-              className={({ isActive }) =>
-                `inline-flex h-11 items-center gap-2 rounded-md px-3 text-sm font-semibold transition ${
-                  isActive ? "bg-sapphire-700 text-white" : "bg-slate-900 text-white hover:bg-sapphire-800"
-                }`
-              }
-            >
-              <AdminIcon size={17} />
-              {adminLabel}
-            </NavLink>
-            {session ? (
-              <NavLink
-                to="/admin/accounts"
-                onClick={closeMobileMenu}
-                className={({ isActive }) =>
-                  `inline-flex h-11 items-center gap-2 rounded-md px-3 text-sm font-semibold transition ${
-                    isActive ? "bg-blue-50 text-sapphire-700" : "text-slate-700 hover:bg-slate-100"
-                  }`
-                }
-              >
-                <UserCog size={17} />
-                Pengaturan Akun
-              </NavLink>
-            ) : null}
-          </div>
-        </nav>
+        <div className="mobile-sidebar-layer" onClick={() => setMobileMenuOpen(false)}>
+          <aside className="mobile-sidebar" onClick={(event) => event.stopPropagation()}>
+            <div className="mobile-sidebar-heading">
+              <span>Menu Utama</span>
+              <button type="button" onClick={() => setMobileMenuOpen(false)} aria-label="Tutup menu">
+                <X size={20} />
+              </button>
+            </div>
+            {sidebarContent}
+          </aside>
+        </div>
       ) : null}
-    </header>
+
+      {logoPreviewOpen ? (
+        <div className="logo-preview" role="dialog" aria-modal="true" onClick={() => setLogoPreviewOpen(false)}>
+          <button type="button" className="logo-preview-close" onClick={() => setLogoPreviewOpen(false)} aria-label="Tutup">
+            <X size={22} />
+          </button>
+          <div className="logo-preview-card" onClick={(event) => event.stopPropagation()}>
+            {renderLogo("logo-preview-image")}
+            <p>Logo SDN Wanasari 15</p>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }

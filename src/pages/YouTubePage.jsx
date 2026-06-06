@@ -2,24 +2,15 @@ import { useEffect, useMemo, useState } from "react";
 import { PlayCircle, Search } from "lucide-react";
 import Navbar from "../components/Navbar.jsx";
 import YouTubeCard from "../components/YouTubeCard.jsx";
+import { useSession } from "../hooks/useSession.js";
 import { supabase } from "../lib/supabase.js";
 
 export default function YouTubePage() {
-  const [session, setSession] = useState(null);
+  const session = useSession();
   const [videos, setVideos] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => setSession(nextSession));
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   useEffect(() => {
     async function fetchVideos() {
@@ -53,10 +44,10 @@ export default function YouTubePage() {
   }, [searchQuery, videos]);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="app-shell-page">
       <Navbar session={session} />
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <main className="page-content">
         <section className="mb-8 space-y-5">
           <div className="max-w-3xl">
             <div className="mb-2 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.18em] text-red-700">

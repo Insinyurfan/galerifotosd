@@ -164,10 +164,10 @@ export default function AdminAccountsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="app-shell-page admin-shell-page">
       <Navbar session={session} />
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <main className="page-content">
         <section className="mb-6">
           <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.14em] text-sapphire-700">
             <Users size={17} />

@@ -75,19 +75,19 @@ export default function LoginPage() {
               </span>
               <div>
                 <p className="text-sm font-black uppercase tracking-[0.12em] text-slate-950 sm:text-base lg:text-xl">
-                  Galeri SDN Wanasari 15
+                  Perpisahan Kelas 6 2026
                 </p>
                 <p className="mt-1 text-sm font-semibold text-slate-600">Kelola momen, bagikan cerita.</p>
               </div>
             </div>
 
             <h1 className="mt-8 max-w-sm text-3xl font-black leading-tight tracking-normal text-slate-950 drop-shadow-[0_1px_0_rgba(255,255,255,0.85)] sm:text-4xl lg:hidden">
-              Galeri indah untuk setiap momen.
+              Kenangan indah untuk setiap langkah baru.
             </h1>
 
             <div className="mt-auto max-w-xl pb-2 pt-28 sm:pt-36 lg:mt-20 lg:pb-0 lg:pt-0 xl:mt-24">
               <h1 className="hidden max-w-sm text-3xl font-black leading-tight tracking-normal text-slate-950 drop-shadow-[0_1px_0_rgba(255,255,255,0.85)] sm:text-4xl lg:block lg:max-w-xl lg:text-5xl xl:text-6xl">
-                Galeri indah untuk setiap momen.
+                Kenangan indah untuk setiap langkah baru.
               </h1>
               <p className="mt-3 max-w-sm text-sm font-semibold leading-6 text-slate-700 sm:text-base lg:mt-6 lg:max-w-lg lg:text-lg lg:font-normal lg:leading-8">
                 Kelola foto, video, dan kenangan SDN Wanasari 15 dengan tampilan yang rapi dan mudah diakses.
@@ -104,7 +104,7 @@ export default function LoginPage() {
             <section className="rounded-[28px] border border-white/80 bg-gradient-to-br from-white/95 via-blue-50/95 to-white/90 p-6 shadow-[0_28px_90px_rgba(30,64,175,0.16)] backdrop-blur sm:p-9">
               <Link to="/" className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-sapphire-700 hover:text-sapphire-800">
                 <ArrowLeft size={17} />
-                Kembali ke galeri
+                Kembali ke dashboard
               </Link>
 
               <div className="mb-8">

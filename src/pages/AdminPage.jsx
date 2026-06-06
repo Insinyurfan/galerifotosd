@@ -503,10 +503,10 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="app-shell-page admin-shell-page">
       <Navbar session={session} />
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <main className="page-content">
         <section className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.18em] text-sapphire-700">Dashboard</p>
